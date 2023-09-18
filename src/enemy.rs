@@ -44,7 +44,6 @@ impl Enemy {
 
     // If the enemy is not dead or hit, decrement the health by 1 and set the state to Hit
 
-
     // If the enemy is hit, reset the state to NotHit for the next turn
     pub(crate) fn reset_state(&mut self) {
         match self.state {
@@ -70,5 +69,3 @@ impl CanBeHit for Enemy {
         }
     }
 }
-
-

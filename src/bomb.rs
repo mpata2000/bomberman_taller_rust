@@ -1,4 +1,4 @@
-use crate::obstacle::{Obstacle, self};
+use crate::obstacle::{self, Obstacle};
 use crate::point::{Direction, Point};
 
 #[derive(Debug, PartialEq)]
@@ -64,31 +64,6 @@ impl Bomb {
         }
     }
 
-    /* 
-    fn explode_with_direction(&mut self, point: Point, dir:Direction, obstacles: &Vec<Obstacle>) -> Vec<&Point> {
-        let mut points = vec![];
-        let mut affected_point = point;
-        
-        for _ in 0..self.explotion_distance {
-            let affected_point = match affected_point.next_point(dir) {
-                Ok(x) => &x,
-                Err(_) => break,
-            };
-            let obstacle = obstacles.iter().find(|obstacle| obstacle.is_in_position(affected_point.clone()));
-            match obstacle {
-                Some(obstacle) => {
-                    if self.bomb_can_pass(obstacle) {
-                        points.push(affected_point);
-                    }
-                    break;
-                }
-                None => points.push(affected_point),
-            }
-        }
-
-        points
-    }*/
-
     pub(crate) fn explode(&mut self, obstacles: &Vec<Obstacle>) -> Vec<Point> {
         self.bomb_state = BombState::Exploded;
         let mut explosion_points = vec![self.position];
@@ -101,17 +76,21 @@ impl Bomb {
                     Ok(x) => x,
                     Err(_) => break,
                 };
-                let obstacle = obstacles.iter().find(|obstacle| obstacle.is_in_position(affected_point.clone()));
+                
+                let obstacle = obstacles
+                    .iter()
+                    .find(|obstacle| obstacle.is_in_position(affected_point.clone()));
+                
                 match obstacle {
                     Some(obstacle) => {
-                        if self.bomb_can_pass(obstacle) {
-                            explosion_points.push(affected_point);
+                        move_dir = obstacle.next_direction(move_dir);
+                        if !self.bomb_can_pass(obstacle) {
+                            break;
                         }
-                        break;
+                        explosion_points.push(affected_point);
                     }
                     None => explosion_points.push(affected_point),
                 }
-
             }
         }
 

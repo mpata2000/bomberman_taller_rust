@@ -67,5 +67,4 @@ fn main() {
     println!("{:#?}", result);
 
     println!("{:#?}", game);
-
 }

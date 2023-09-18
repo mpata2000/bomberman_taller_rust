@@ -59,14 +59,13 @@ impl Bomberman {
                 };
                 self.bombs.push(bomb);
             }
-            'R' | 'W' => {
+            'R' | 'W' | 'D' => {
                 let obstacle = match Obstacle::new(square, point) {
                     Ok(obstacle) => obstacle,
                     Err(e) => return Err(e),
                 };
                 self.obstacles.push(obstacle);
             }
-            'D' => todo!("Implement deflection"),
             '_' => (),
             _ => return Err(format!("Invalid square: {}", square)),
         }
@@ -78,12 +77,18 @@ impl Bomberman {
     }
 
     fn get_hittable_in_position(&mut self, position: Point) -> Option<&mut dyn CanBeHit> {
-        let enemy = self.enemies.iter_mut().find(|enemy| enemy.is_in_position(position));
+        let enemy = self
+            .enemies
+            .iter_mut()
+            .find(|enemy| enemy.is_in_position(position));
         match enemy {
             Some(enemy) => return Some(enemy),
             None => (),
         }
-        let bomb = self.bombs.iter_mut().find(|bomb| bomb.is_in_position(position));
+        let bomb = self
+            .bombs
+            .iter_mut()
+            .find(|bomb| bomb.is_in_position(position));
         match bomb {
             Some(bomb) => return Some(bomb),
             None => (),
@@ -91,15 +96,18 @@ impl Bomberman {
         None
     }
 
-    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String,String>{
-        let first_bomb = self.bombs.iter_mut().find(|bomb| bomb.is_in_position(start_bomb));
+    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String, String> {
+        let first_bomb = self
+            .bombs
+            .iter_mut()
+            .find(|bomb| bomb.is_in_position(start_bomb));
         match first_bomb {
             Some(bomb) => bomb.hit(),
             None => return Err("No bomb in starting position".to_string()),
         }
 
         // TODO: Fix Searching twice?
-        while self.there_are_active_bombs(){
+        while self.there_are_active_bombs() {
             let bomb = self.bombs.iter_mut().find(|bomb| bomb.is_active());
             let afected_positions = match bomb {
                 Some(bomb) => bomb.explode(&self.obstacles),
@@ -112,6 +120,7 @@ impl Bomberman {
                     None => (),
                 }
             }
+            self.enemies.iter_mut().for_each(|enemy| enemy.reset_state());
         }
 
         Ok("".to_string())
