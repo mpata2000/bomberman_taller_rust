@@ -51,3 +51,64 @@ impl Obstacle {
         }
     }
 }
+
+#[cfg(test)]
+mod test{
+    use super::*;
+
+    #[test]
+    fn test_new_wall(){
+        let square = "W".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::Wall, position: Point::new(0, 0)}));
+    }
+
+    #[test]
+    fn test_new_rock(){
+        let square = "R".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::Rock, position: Point::new(0, 0)}));
+    }
+
+    #[test]
+    fn test_new_redirection_up(){
+        let square = "DU".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionUp, position: Point::new(0, 0)}));
+    }
+
+    #[test]
+    fn test_new_redirection_down(){
+        let square = "DD".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionDown, position: Point::new(0, 0)}));
+    }
+
+    #[test]
+    fn test_new_redirection_left(){
+        let square = "DL".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionLeft, position: Point::new(0, 0)}));
+    }
+
+    #[test]
+    fn test_new_redirection_right(){
+        let square = "DR".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionRight, position: Point::new(0, 0)}));
+    }
+
+    #[test]
+    fn test_new_invalid_obstacle(){
+        let square = "A".to_string();
+        let position = Point::new(0, 0);
+        let result = Obstacle::new(square, position);
+        assert_eq!(result, Err("Invalid obstacle: A".to_string()));
+    }
+}
