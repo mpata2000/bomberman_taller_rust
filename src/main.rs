@@ -1,12 +1,11 @@
-mod bomberman;
 mod bomb;
+mod bomberman;
 mod enemy;
 mod obstacle;
 mod point;
 
-
-use std;
 use crate::point::Point;
+use std;
 
 fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     if args.len() != 4 {
@@ -21,13 +20,7 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     let y = args[3].parse::<u32>();
 
     match (x, y) {
-        (Ok(x), Ok(y)) if x > 0 && y > 0 => {
-            Ok((
-                input_path,
-                output_path,
-                Point::new(x, y),
-            ))
-        }
+        (Ok(x), Ok(y)) if x > 0 && y > 0 => Ok((input_path, output_path, Point::new(x, y))),
         (Ok(_), Ok(_)) => Err("x and y must be greater than 0".to_string()),
         (Err(_), Ok(_)) => Err("x must be a number".to_string()),
         (Ok(_), Err(_)) => Err("y must be a number".to_string()),
@@ -60,4 +53,13 @@ fn main() {
         }
     };
 
+    let game = match bomberman::Bomberman::new(contents) {
+        Ok(game) => game,
+        Err(e) => {
+            println!("{}", e);
+            return;
+        }
+    };
+
+    print!("{:?}", game);
 }

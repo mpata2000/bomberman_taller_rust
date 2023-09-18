@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Point {
     pub(crate) x: u32,
     pub(crate) y: u32,
