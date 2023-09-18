@@ -1,4 +1,4 @@
-use crate::obstacle::{self, Obstacle};
+use crate::obstacle::Obstacle;
 use crate::point::{Direction, Point};
 
 #[derive(Debug, PartialEq)]

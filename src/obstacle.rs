@@ -10,7 +10,7 @@ pub(crate) enum ObstacleType {
     RedirectionRight,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct Obstacle {
     pub(crate) obstacle_type: ObstacleType,
     position: Point,
