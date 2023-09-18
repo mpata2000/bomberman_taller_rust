@@ -1,4 +1,4 @@
-use crate::bomb::Bomb;
+use crate::bomb::{Bomb, CanBeHit};
 use crate::enemy::Enemy;
 use crate::obstacle::Obstacle;
 use crate::point::Point;
@@ -23,12 +23,12 @@ impl Bomberman {
             obstacles,
         };
 
-        for (x, line) in lines.iter().enumerate() {
+        for (y, line) in lines.iter().enumerate() {
             let squares: Vec<&str> = line.split(" ").collect();
             if squares.len() != lines.len() {
                 return Err(format!("Incorrect number of squares in line: {}", line));
             }
-            for (y, square) in squares.iter().enumerate() {
+            for (x, square) in squares.iter().enumerate() {
                 let point = Point::new(x as u32, y as u32);
                 match game.add_square(square.to_string(), point) {
                     Ok(_) => (),
@@ -71,5 +71,49 @@ impl Bomberman {
             _ => return Err(format!("Invalid square: {}", square)),
         }
         Ok(())
+    }
+
+    fn there_are_active_bombs(&mut self) -> bool {
+        self.bombs.iter().any(|bomb| bomb.is_active())
+    }
+
+    fn get_hittable_in_position(&mut self, position: Point) -> Option<&mut dyn CanBeHit> {
+        let enemy = self.enemies.iter_mut().find(|enemy| enemy.is_in_position(position));
+        match enemy {
+            Some(enemy) => return Some(enemy),
+            None => (),
+        }
+        let bomb = self.bombs.iter_mut().find(|bomb| bomb.is_in_position(position));
+        match bomb {
+            Some(bomb) => return Some(bomb),
+            None => (),
+        }
+        None
+    }
+
+    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String,String>{
+        let first_bomb = self.bombs.iter_mut().find(|bomb| bomb.is_in_position(start_bomb));
+        match first_bomb {
+            Some(bomb) => bomb.hit(),
+            None => return Err("No bomb in starting position".to_string()),
+        }
+
+        // TODO: Fix Searching twice?
+        while self.there_are_active_bombs(){
+            let bomb = self.bombs.iter_mut().find(|bomb| bomb.is_active());
+            let afected_positions = match bomb {
+                Some(bomb) => bomb.explode(&self.obstacles),
+                None => return Err("No active bomb found".to_string()),
+            };
+            for position in afected_positions {
+                let hittable = self.get_hittable_in_position(position);
+                match hittable {
+                    Some(hittable) => hittable.hit(),
+                    None => (),
+                }
+            }
+        }
+
+        Ok("".to_string())
     }
 }

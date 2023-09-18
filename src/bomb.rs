@@ -1,12 +1,13 @@
-use crate::point::Point;
+use crate::obstacle::{Obstacle, self};
+use crate::point::{Direction, Point};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum BombType {
     Normal,
     Penetrating,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum BombState {
     NotExploded,
     Exploded,
@@ -18,6 +19,10 @@ pub(crate) struct Bomb {
     bomb_state: BombState,
     position: Point,
     explotion_distance: u32,
+}
+
+pub(crate) trait CanBeHit {
+    fn hit(&mut self);
 }
 
 impl Bomb {
@@ -42,5 +47,83 @@ impl Bomb {
             position,
             explotion_distance: explotion_distance,
         })
+    }
+
+    pub(crate) fn is_in_position(&self, position: Point) -> bool {
+        self.position == position
+    }
+
+    pub(crate) fn is_active(&self) -> bool {
+        self.bomb_state == BombState::Activated
+    }
+
+    fn bomb_can_pass(&mut self, obstacle: &Obstacle) -> bool {
+        match self.bomb_type {
+            BombType::Normal => false,
+            BombType::Penetrating => obstacle.is_rock(),
+        }
+    }
+
+    /* 
+    fn explode_with_direction(&mut self, point: Point, dir:Direction, obstacles: &Vec<Obstacle>) -> Vec<&Point> {
+        let mut points = vec![];
+        let mut affected_point = point;
+        
+        for _ in 0..self.explotion_distance {
+            let affected_point = match affected_point.next_point(dir) {
+                Ok(x) => &x,
+                Err(_) => break,
+            };
+            let obstacle = obstacles.iter().find(|obstacle| obstacle.is_in_position(affected_point.clone()));
+            match obstacle {
+                Some(obstacle) => {
+                    if self.bomb_can_pass(obstacle) {
+                        points.push(affected_point);
+                    }
+                    break;
+                }
+                None => points.push(affected_point),
+            }
+        }
+
+        points
+    }*/
+
+    pub(crate) fn explode(&mut self, obstacles: &Vec<Obstacle>) -> Vec<Point> {
+        self.bomb_state = BombState::Exploded;
+        let mut explosion_points = vec![self.position];
+
+        for dir in Direction::iter() {
+            let mut move_dir = dir;
+            let mut affected_point = self.position;
+            for _ in 0..self.explotion_distance {
+                affected_point = match affected_point.next_point(dir) {
+                    Ok(x) => x,
+                    Err(_) => break,
+                };
+                let obstacle = obstacles.iter().find(|obstacle| obstacle.is_in_position(affected_point.clone()));
+                match obstacle {
+                    Some(obstacle) => {
+                        if self.bomb_can_pass(obstacle) {
+                            explosion_points.push(affected_point);
+                        }
+                        break;
+                    }
+                    None => explosion_points.push(affected_point),
+                }
+
+            }
+        }
+
+        explosion_points
+    }
+}
+
+impl CanBeHit for Bomb {
+    fn hit(&mut self) {
+        match self.bomb_state {
+            BombState::NotExploded => self.bomb_state = BombState::Activated,
+            _ => (),
+        }
     }
 }

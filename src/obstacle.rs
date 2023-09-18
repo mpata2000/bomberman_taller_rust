@@ -1,14 +1,14 @@
 use crate::point::Point;
 
-#[derive(Debug)]
-enum ObstacleType {
+#[derive(Debug, PartialEq)]
+pub(crate) enum ObstacleType {
     Wall,
     Rock,
 }
 
 #[derive(Debug)]
-pub struct Obstacle {
-    obstacle_type: ObstacleType,
+pub(crate) struct Obstacle {
+    pub(crate) obstacle_type: ObstacleType,
     position: Point,
 }
 
@@ -26,5 +26,13 @@ impl Obstacle {
             obstacle_type,
             position,
         })
+    }
+
+    pub(crate) fn is_in_position(&self, position: Point) -> bool {
+        self.position == position
+    }
+
+    pub(crate) fn is_rock(&self) -> bool {
+        self.obstacle_type == ObstacleType::Rock
     }
 }
