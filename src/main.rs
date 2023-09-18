@@ -1,9 +1,12 @@
-use std;
+mod bomberman;
+mod bomb;
+mod enemy;
+mod obstacle;
+mod point;
 
-struct Point {
-    x: u32,
-    y: u32,
-}
+
+use std;
+use crate::point::Point;
 
 fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     if args.len() != 4 {
@@ -22,7 +25,7 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
             Ok((
                 input_path,
                 output_path,
-                Point { x, y },
+                Point::new(x, y),
             ))
         }
         (Ok(_), Ok(_)) => Err("x and y must be greater than 0".to_string()),
@@ -32,10 +35,25 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     }
 }
 
+fn read_file(path: String) -> Result<String, String> {
+    match std::fs::read_to_string(path) {
+        Ok(contents) => Ok(contents),
+        Err(e) => Err(format!("Error reading file: {}", e)),
+    }
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let (input_path, output_path, start_point) = match validate_args(args) {
         Ok((input_path, output_path, point)) => (input_path, output_path, point),
+        Err(e) => {
+            println!("{}", e);
+            return;
+        }
+    };
+
+    let contents = match read_file(input_path) {
+        Ok(contents) => contents,
         Err(e) => {
             println!("{}", e);
             return;
