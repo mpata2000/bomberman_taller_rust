@@ -1,5 +1,5 @@
 #[derive(Clone, Copy)]
-pub(crate) enum Direction{
+pub(crate) enum Direction {
     Up,
     Down,
     Left,
@@ -19,7 +19,7 @@ impl Direction {
         .copied()
     }
 }
-#[derive(Debug, PartialEq,Copy,Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Point {
     pub(crate) x: u32,
     pub(crate) y: u32,
@@ -30,10 +30,10 @@ impl Point {
         Point { x, y }
     }
 
-    pub(crate) fn next_point(self, direction: Direction) -> Result<Point,String> {
+    pub(crate) fn next_point(self, direction: Direction) -> Result<Point, String> {
         let point = match direction {
-            Direction::Up => Point::new(self.x, self.y + 1),
-            Direction::Down => {
+            Direction::Down => Point::new(self.x, self.y + 1),
+            Direction::Up => {
                 if self.y == 0 {
                     return Err("Cannot move down from the bottom of the board".to_string());
                 }
@@ -48,5 +48,58 @@ impl Point {
             Direction::Right => Point::new(self.x + 1, self.y),
         };
         Ok(point)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_next_point_up_from_start_throw_error(){
+        let point = Point::new(0, 0);
+        let direction = Direction::Up;
+        let result = point.next_point(direction);
+        assert_eq!(result, Err("Cannot move down from the bottom of the board".to_string()));
+    }
+
+    #[test]
+    fn test_next_point_left_from_start_throw_error(){
+        let point = Point::new(0, 0);
+        let direction = Direction::Left;
+        let result = point.next_point(direction);
+        assert_eq!(result, Err("Cannot move left from the left of the board".to_string()));
+    }
+
+    #[test]
+    fn test_next_point_down_from_start(){
+        let point = Point::new(0, 0);
+        let direction = Direction::Down;
+        let result = point.next_point(direction);
+        assert_eq!(result, Ok(Point::new(0, 1)));
+    }
+
+    #[test]
+    fn test_next_point_right_from_start(){
+        let point = Point::new(0, 0);
+        let direction = Direction::Right;
+        let result = point.next_point(direction);
+        assert_eq!(result, Ok(Point::new(1, 0)));
+    }
+
+    #[test]
+    fn test_next_point_up_from_middle(){
+        let point = Point::new(0, 1);
+        let direction = Direction::Up;
+        let result = point.next_point(direction);
+        assert_eq!(result, Ok(Point::new(0, 0)));
+    }
+
+    #[test]
+    fn test_next_point_left_from_middle(){
+        let point = Point::new(1, 0);
+        let direction = Direction::Left;
+        let result = point.next_point(direction);
+        assert_eq!(result, Ok(Point::new(0, 0)));
     }
 }
