@@ -1,4 +1,4 @@
-use crate::bomb::{Bomb, CanBeHit};
+use crate::bomb::Bomb;
 use crate::enemy::Enemy;
 use crate::obstacle::Obstacle;
 use crate::point::Point;
@@ -8,6 +8,17 @@ pub(crate) struct Bomberman {
     enemies: Vec<Enemy>,
     bombs: Vec<Bomb>,
     obstacles: Vec<Obstacle>,
+    size: u32,
+}
+
+pub(crate) trait CanBeHit {
+    fn hit(&mut self);
+    fn is_in_position(&self, position: Point) -> bool;
+}
+
+pub(crate) trait MazeDisplay {
+    fn display(&self) -> String;
+    fn get_position(&self) -> Point;
 }
 
 impl Bomberman {
@@ -21,11 +32,12 @@ impl Bomberman {
             enemies,
             bombs,
             obstacles,
+            size: lines.len() as u32,
         };
 
         for (y, line) in lines.iter().enumerate() {
             let squares: Vec<&str> = line.split(" ").collect();
-            if squares.len() != lines.len() {
+            if squares.len() != game.size as usize {
                 return Err(format!("Incorrect number of squares in line: {}", line));
             }
             for (x, square) in squares.iter().enumerate() {
@@ -76,53 +88,68 @@ impl Bomberman {
         self.bombs.iter().any(|bomb| bomb.is_active())
     }
 
+    // Set game for next turn
+    //  - Reset enemies state
+    fn next_turn(&mut self) {
+        self.enemies
+            .iter_mut()
+            .for_each(|enemy| enemy.reset_state());
+    }
+    
     fn get_hittable_in_position(&mut self, position: Point) -> Option<&mut dyn CanBeHit> {
-        let enemy = self
-            .enemies
-            .iter_mut()
-            .find(|enemy| enemy.is_in_position(position));
-        match enemy {
-            Some(enemy) => return Some(enemy),
-            None => (),
+        let mut hittable: Option<&mut dyn CanBeHit> = None;
+        if let Some(enemy) = self.enemies.iter_mut().find(|enemy| enemy.is_in_position(position)) {
+            hittable = Some(enemy);
         }
-        let bomb = self
-            .bombs
-            .iter_mut()
-            .find(|bomb| bomb.is_in_position(position));
-        match bomb {
-            Some(bomb) => return Some(bomb),
-            None => (),
+        if let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_in_position(position)) {
+            hittable = Some(bomb);
         }
-        None
+        hittable
     }
 
-    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String, String> {
+    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<Vec<Vec<String>>, String> {
         let first_bomb = self
             .bombs
             .iter_mut()
             .find(|bomb| bomb.is_in_position(start_bomb));
         match first_bomb {
             Some(bomb) => bomb.hit(),
-            None => return Err("No bomb in starting position".to_string()),
+            None => return Err("No bomb in starting position x: {}, y: {}".to_string()),
         }
 
-        // TODO: Fix Searching twice?
-        while self.there_are_active_bombs() {
-            let bomb = self.bombs.iter_mut().find(|bomb| bomb.is_active());
-            let afected_positions = match bomb {
-                Some(bomb) => bomb.explode(&self.obstacles),
-                None => return Err("No active bomb found".to_string()),
-            };
+        while let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_active()) {
+            let afected_positions = bomb.explode(&self.obstacles);
             for position in afected_positions {
-                let hittable = self.get_hittable_in_position(position);
-                match hittable {
-                    Some(hittable) => hittable.hit(),
+                match self.get_hittable_in_position(position) {
+                    Some(hittable) => (*hittable).hit(),
                     None => (),
                 }
             }
-            self.enemies.iter_mut().for_each(|enemy| enemy.reset_state());
+            self.next_turn()
         }
 
-        Ok("".to_string())
+        Ok(self.to_matrix())
+    }
+
+    fn get_all_displayable(&self) -> Vec<&dyn MazeDisplay> {
+        let mut displayable: Vec<&dyn MazeDisplay> = Vec::new();
+        displayable.extend(self.enemies.iter().map(|enemy| enemy as &dyn MazeDisplay));
+        displayable.extend(self.bombs.iter().map(|bomb| bomb as &dyn MazeDisplay));
+        displayable.extend(
+            self.obstacles
+                .iter()
+                .map(|obstacle| obstacle as &dyn MazeDisplay),
+        );
+        displayable
+    }
+
+    pub(crate) fn to_matrix(&self) -> Vec<Vec<String>> {
+        let mut matrix = vec![vec!["_".to_string(); self.size as usize]; self.size as usize];
+        let displayable = self.get_all_displayable();
+        displayable.iter().for_each(|displayable| {
+            let position = displayable.get_position();
+            matrix[position.y as usize][position.x as usize] = displayable.display();
+        });
+        matrix
     }
 }

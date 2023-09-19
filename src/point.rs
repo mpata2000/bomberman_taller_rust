@@ -56,23 +56,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_next_point_up_from_start_throw_error(){
+    fn test_next_point_up_from_start_throw_error() {
         let point = Point::new(0, 0);
         let direction = Direction::Up;
         let result = point.next_point(direction);
-        assert_eq!(result, Err("Cannot move down from the bottom of the board".to_string()));
+        assert_eq!(
+            result,
+            Err("Cannot move down from the bottom of the board".to_string())
+        );
     }
 
     #[test]
-    fn test_next_point_left_from_start_throw_error(){
+    fn test_next_point_left_from_start_throw_error() {
         let point = Point::new(0, 0);
         let direction = Direction::Left;
         let result = point.next_point(direction);
-        assert_eq!(result, Err("Cannot move left from the left of the board".to_string()));
+        assert_eq!(
+            result,
+            Err("Cannot move left from the left of the board".to_string())
+        );
     }
 
     #[test]
-    fn test_next_point_down_from_start(){
+    fn test_next_point_down_from_start() {
         let point = Point::new(0, 0);
         let direction = Direction::Down;
         let result = point.next_point(direction);
@@ -80,7 +86,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_point_right_from_start(){
+    fn test_next_point_right_from_start() {
         let point = Point::new(0, 0);
         let direction = Direction::Right;
         let result = point.next_point(direction);
@@ -88,7 +94,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_point_up_from_middle(){
+    fn test_next_point_up_from_middle() {
         let point = Point::new(0, 1);
         let direction = Direction::Up;
         let result = point.next_point(direction);
@@ -96,7 +102,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_point_left_from_middle(){
+    fn test_next_point_left_from_middle() {
         let point = Point::new(1, 0);
         let direction = Direction::Left;
         let result = point.next_point(direction);

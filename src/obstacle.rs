@@ -1,4 +1,5 @@
-use crate::point::{Point, Direction};
+use crate::bomberman::MazeDisplay;
+use crate::point::{Direction, Point};
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum ObstacleType {
@@ -13,7 +14,7 @@ pub(crate) enum ObstacleType {
 #[derive(Debug, PartialEq)]
 pub(crate) struct Obstacle {
     pub(crate) obstacle_type: ObstacleType,
-    position: Point,
+    pub(crate) position: Point,
 }
 
 impl Obstacle {
@@ -62,60 +63,113 @@ impl Obstacle {
     }
 }
 
+impl MazeDisplay for Obstacle {
+    fn display(&self) -> String {
+        match self.obstacle_type {
+            ObstacleType::Wall => "W".to_string(),
+            ObstacleType::Rock => "R".to_string(),
+            ObstacleType::RedirectionUp => "DU".to_string(),
+            ObstacleType::RedirectionDown => "DD".to_string(),
+            ObstacleType::RedirectionLeft => "DL".to_string(),
+            ObstacleType::RedirectionRight => "DR".to_string(),
+        }
+    }
+
+    fn get_position(&self) -> Point {
+        self.position
+    }
+}
+
 #[cfg(test)]
-mod test{
+mod test {
     use super::*;
 
     #[test]
-    fn test_new_wall(){
+    fn test_new_wall() {
         let square = "W".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::Wall, position: Point::new(0, 0)}));
+        assert_eq!(
+            result,
+            Ok(Obstacle {
+                obstacle_type: ObstacleType::Wall,
+                position: Point::new(0, 0)
+            })
+        );
     }
 
     #[test]
-    fn test_new_rock(){
+    fn test_new_rock() {
         let square = "R".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::Rock, position: Point::new(0, 0)}));
+        assert_eq!(
+            result,
+            Ok(Obstacle {
+                obstacle_type: ObstacleType::Rock,
+                position: Point::new(0, 0)
+            })
+        );
     }
 
     #[test]
-    fn test_new_redirection_up(){
+    fn test_new_redirection_up() {
         let square = "DU".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionUp, position: Point::new(0, 0)}));
+        assert_eq!(
+            result,
+            Ok(Obstacle {
+                obstacle_type: ObstacleType::RedirectionUp,
+                position: Point::new(0, 0)
+            })
+        );
     }
 
     #[test]
-    fn test_new_redirection_down(){
+    fn test_new_redirection_down() {
         let square = "DD".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionDown, position: Point::new(0, 0)}));
+        assert_eq!(
+            result,
+            Ok(Obstacle {
+                obstacle_type: ObstacleType::RedirectionDown,
+                position: Point::new(0, 0)
+            })
+        );
     }
 
     #[test]
-    fn test_new_redirection_left(){
+    fn test_new_redirection_left() {
         let square = "DL".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionLeft, position: Point::new(0, 0)}));
+        assert_eq!(
+            result,
+            Ok(Obstacle {
+                obstacle_type: ObstacleType::RedirectionLeft,
+                position: Point::new(0, 0)
+            })
+        );
     }
 
     #[test]
-    fn test_new_redirection_right(){
+    fn test_new_redirection_right() {
         let square = "DR".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Ok(Obstacle{obstacle_type: ObstacleType::RedirectionRight, position: Point::new(0, 0)}));
+        assert_eq!(
+            result,
+            Ok(Obstacle {
+                obstacle_type: ObstacleType::RedirectionRight,
+                position: Point::new(0, 0)
+            })
+        );
     }
 
     #[test]
-    fn test_new_invalid_obstacle(){
+    fn test_new_invalid_obstacle() {
         let square = "A".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
@@ -123,70 +177,97 @@ mod test{
     }
 
     #[test]
-    fn test_is_in_position_equal_position(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::Wall, position: Point::new(0, 0)};
+    fn test_is_in_position_equal_position() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::Wall,
+            position: Point::new(0, 0),
+        };
         let position = Point::new(0, 0);
         let result = obstacle.is_in_position(position);
         assert_eq!(result, true);
     }
 
     #[test]
-    fn test_is_in_position_different_position(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::Wall, position: Point::new(0, 0)};
+    fn test_is_in_position_different_position() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::Wall,
+            position: Point::new(0, 0),
+        };
         let position = Point::new(0, 1);
         let result = obstacle.is_in_position(position);
         assert_eq!(result, false);
     }
 
     #[test]
-    fn test_is_rock_for_rock(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::Rock, position: Point::new(0, 0)};
+    fn test_is_rock_for_rock() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::Rock,
+            position: Point::new(0, 0),
+        };
         let result = obstacle.is_rock();
         assert_eq!(result, true);
     }
 
     #[test]
-    fn test_is_rock_for_not_rock(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::Wall, position: Point::new(0, 0)};
+    fn test_is_rock_for_not_rock() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::Wall,
+            position: Point::new(0, 0),
+        };
         let result = obstacle.is_rock();
         assert_eq!(result, false);
     }
 
     #[test]
-    fn test_next_direction_for_redirection_up(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::RedirectionUp, position: Point::new(0, 0)};
+    fn test_next_direction_for_redirection_up() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::RedirectionUp,
+            position: Point::new(0, 0),
+        };
         let direction = Direction::Down;
         let result = obstacle.next_direction(direction);
         assert_eq!(result, Direction::Up);
     }
 
     #[test]
-    fn test_next_direction_for_redirection_down(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::RedirectionDown, position: Point::new(0, 0)};
+    fn test_next_direction_for_redirection_down() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::RedirectionDown,
+            position: Point::new(0, 0),
+        };
         let direction = Direction::Up;
         let result = obstacle.next_direction(direction);
         assert_eq!(result, Direction::Down);
     }
 
     #[test]
-    fn test_next_direction_for_redirection_left(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::RedirectionLeft, position: Point::new(0, 0)};
+    fn test_next_direction_for_redirection_left() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::RedirectionLeft,
+            position: Point::new(0, 0),
+        };
         let direction = Direction::Right;
         let result = obstacle.next_direction(direction);
         assert_eq!(result, Direction::Left);
     }
 
     #[test]
-    fn test_next_direction_for_redirection_right(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::RedirectionRight, position: Point::new(0, 0)};
+    fn test_next_direction_for_redirection_right() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::RedirectionRight,
+            position: Point::new(0, 0),
+        };
         let direction = Direction::Left;
         let result = obstacle.next_direction(direction);
         assert_eq!(result, Direction::Right);
     }
 
     #[test]
-    fn test_next_direction_for_not_redirection(){
-        let obstacle = Obstacle{obstacle_type: ObstacleType::Wall, position: Point::new(0, 0)};
+    fn test_next_direction_for_not_redirection() {
+        let obstacle = Obstacle {
+            obstacle_type: ObstacleType::Wall,
+            position: Point::new(0, 0),
+        };
         let direction = Direction::Left;
         let result = obstacle.next_direction(direction);
         assert_eq!(result, Direction::Left);

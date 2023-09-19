@@ -1,11 +1,11 @@
-use crate::bomb::CanBeHit;
+use crate::bomberman::{CanBeHit, MazeDisplay};
 use crate::point::Point;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum EnemyState {
     Hit,
     Dead,
-    NotHit,
+    Idle,
 }
 
 #[derive(Debug)]
@@ -34,20 +34,14 @@ impl Enemy {
         Ok(Enemy {
             health,
             position,
-            state: EnemyState::NotHit,
+            state: EnemyState::Idle,
         })
     }
-
-    pub(crate) fn is_in_position(&self, position: Point) -> bool {
-        self.position == position
-    }
-
-    // If the enemy is not dead or hit, decrement the health by 1 and set the state to Hit
 
     // If the enemy is hit, reset the state to NotHit for the next turn
     pub(crate) fn reset_state(&mut self) {
         match self.state {
-            EnemyState::Hit => self.state = EnemyState::NotHit,
+            EnemyState::Hit => self.state = EnemyState::Idle,
             _ => (),
         }
     }
@@ -56,7 +50,7 @@ impl Enemy {
 impl CanBeHit for Enemy {
     fn hit(&mut self) {
         match self.state {
-            EnemyState::NotHit => {
+            EnemyState::Idle => {
                 self.health -= 1;
                 if self.health == 0 {
                     self.state = EnemyState::Dead;
@@ -67,5 +61,22 @@ impl CanBeHit for Enemy {
             EnemyState::Hit => (),
             EnemyState::Dead => (),
         }
+    }
+
+    fn is_in_position(&self, position: Point) -> bool {
+        self.position == position
+    }
+}
+
+impl MazeDisplay for Enemy {
+    fn display(&self) -> String {
+        if self.state != EnemyState::Idle {
+            return "_".to_string();
+        }
+        format!("F{}", self.health)
+    }
+
+    fn get_position(&self) -> Point {
+        self.position
     }
 }

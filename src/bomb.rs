@@ -1,3 +1,4 @@
+use crate::bomberman::{CanBeHit, MazeDisplay};
 use crate::obstacle::Obstacle;
 use crate::point::{Direction, Point};
 
@@ -21,10 +22,6 @@ pub(crate) struct Bomb {
     explotion_distance: u32,
 }
 
-pub(crate) trait CanBeHit {
-    fn hit(&mut self);
-}
-
 impl Bomb {
     pub(crate) fn new(square: String, position: Point) -> Result<Bomb, String> {
         if square.len() < 2 {
@@ -45,12 +42,8 @@ impl Bomb {
             bomb_type,
             bomb_state: BombState::NotExploded,
             position,
-            explotion_distance: explotion_distance,
+            explotion_distance,
         })
-    }
-
-    pub(crate) fn is_in_position(&self, position: Point) -> bool {
-        self.position == position
     }
 
     pub(crate) fn is_active(&self) -> bool {
@@ -76,11 +69,11 @@ impl Bomb {
                     Ok(x) => x,
                     Err(_) => break,
                 };
-                
+
                 let obstacle = obstacles
                     .iter()
                     .find(|obstacle| obstacle.is_in_position(affected_point.clone()));
-                
+
                 match obstacle {
                     Some(obstacle) => {
                         move_dir = obstacle.next_direction(move_dir);
@@ -104,5 +97,25 @@ impl CanBeHit for Bomb {
             BombState::NotExploded => self.bomb_state = BombState::Activated,
             _ => (),
         }
+    }
+
+    fn is_in_position(&self, position: Point) -> bool {
+        self.position == position
+    }
+}
+
+impl MazeDisplay for Bomb {
+    fn display(&self) -> String {
+        if self.bomb_state == BombState::Exploded {
+            return "_".to_string();
+        }
+        match self.bomb_type {
+            BombType::Normal => format!("B{}", self.explotion_distance),
+            BombType::Penetrating => format!("S{}", self.explotion_distance),
+        }
+    }
+
+    fn get_position(&self) -> Point {
+        self.position
     }
 }
