@@ -3,7 +3,7 @@ use crate::obstacle::Obstacle;
 use crate::point::{Direction, Point};
 use std::collections::HashSet;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum BombType {
     Normal,
     Penetrating,
@@ -57,13 +57,6 @@ impl Bomb {
         self.bomb_state == BombState::Activated
     }
 
-    fn bomb_can_pass(&mut self, obstacle: &Obstacle) -> bool {
-        match self.bomb_type {
-            BombType::Normal => obstacle.is_redirection(),
-            BombType::Penetrating => obstacle.is_redirection() || obstacle.is_rock(),
-        }
-    }
-
     pub(crate) fn explode(&mut self, maze_size: u32, obstacles: &[Obstacle]) -> Vec<Point> {
         self.bomb_state = BombState::Exploded;
         let mut explosion_points = HashSet::from([self.position]);
@@ -82,13 +75,11 @@ impl Bomb {
                     .find(|obstacle| obstacle.is_in_position(affected_point));
 
                 match obstacle {
-                    Some(obstacle) => {
+                    Some(obstacle) if obstacle.explosion_can_pass(self.bomb_type) => {
                         move_dir = obstacle.next_direction(move_dir);
-                        if !self.bomb_can_pass(obstacle) {
-                            break;
-                        }
                         explosion_points.insert(affected_point);
                     }
+                    Some(_) => break,
                     None => {
                         explosion_points.insert(affected_point);
                     }
@@ -243,93 +234,5 @@ mod test {
         };
         bomb.hit();
         assert_eq!(bomb.bomb_state, BombState::Exploded);
-    }
-
-    #[test]
-    fn test_normal_bomb_can_pass_any_redirection() {
-        let mut bomb = Bomb {
-            bomb_type: BombType::Normal,
-            bomb_state: BombState::Activated,
-            position: Point::new(0, 0),
-            explosion_distance: 3,
-        };
-        let obstacles = vec![
-            Obstacle::new("DU".to_string(), Point::new(0, 0)).unwrap(),
-            Obstacle::new("DD".to_string(), Point::new(0, 0)).unwrap(),
-            Obstacle::new("DL".to_string(), Point::new(0, 0)).unwrap(),
-            Obstacle::new("DR".to_string(), Point::new(0, 0)).unwrap(),
-        ];
-
-        assert_eq!(bomb.bomb_can_pass(&obstacles[0]), true);
-        assert_eq!(bomb.bomb_can_pass(&obstacles[1]), true);
-        assert_eq!(bomb.bomb_can_pass(&obstacles[2]), true);
-        assert_eq!(bomb.bomb_can_pass(&obstacles[3]), true);
-    }
-
-    #[test]
-    fn test_penetreting_bomb_can_pass_any_redirection() {
-        let mut bomb = Bomb {
-            bomb_type: BombType::Penetrating,
-            bomb_state: BombState::Activated,
-            position: Point::new(0, 0),
-            explosion_distance: 3,
-        };
-        let obstacles = vec![
-            Obstacle::new("DU".to_string(), Point::new(0, 0)).unwrap(),
-            Obstacle::new("DD".to_string(), Point::new(0, 0)).unwrap(),
-            Obstacle::new("DL".to_string(), Point::new(0, 0)).unwrap(),
-            Obstacle::new("DR".to_string(), Point::new(0, 0)).unwrap(),
-        ];
-
-        assert_eq!(bomb.bomb_can_pass(&obstacles[0]), true);
-        assert_eq!(bomb.bomb_can_pass(&obstacles[1]), true);
-        assert_eq!(bomb.bomb_can_pass(&obstacles[2]), true);
-        assert_eq!(bomb.bomb_can_pass(&obstacles[3]), true);
-    }
-
-    #[test]
-    fn test_bomb_can_not_pass_wall() {
-        let mut penetrating_bomb = Bomb {
-            bomb_type: BombType::Penetrating,
-            bomb_state: BombState::Activated,
-            position: Point::new(0, 0),
-            explosion_distance: 3,
-        };
-        let mut normal_bomb = Bomb {
-            bomb_type: BombType::Normal,
-            bomb_state: BombState::Activated,
-            position: Point::new(0, 0),
-            explosion_distance: 3,
-        };
-
-        let obstalce = Obstacle::new("W".to_string(), Point::new(0, 0)).unwrap();
-        assert_eq!(penetrating_bomb.bomb_can_pass(&obstalce), false);
-        assert_eq!(normal_bomb.bomb_can_pass(&obstalce), false);
-    }
-
-    #[test]
-    fn test_normal_bomb_can_not_pass_rock() {
-        let mut bomb = Bomb {
-            bomb_type: BombType::Normal,
-            bomb_state: BombState::Activated,
-            position: Point::new(0, 0),
-            explosion_distance: 3,
-        };
-
-        let obstalce = Obstacle::new("R".to_string(), Point::new(0, 0)).unwrap();
-        assert_eq!(bomb.bomb_can_pass(&obstalce), false);
-    }
-
-    #[test]
-    fn test_penetreting_bomb_can_pass_rock() {
-        let mut bomb = Bomb {
-            bomb_type: BombType::Penetrating,
-            bomb_state: BombState::Activated,
-            position: Point::new(0, 0),
-            explosion_distance: 3,
-        };
-
-        let obstalce = Obstacle::new("R".to_string(), Point::new(0, 0)).unwrap();
-        assert_eq!(bomb.bomb_can_pass(&obstalce), true);
     }
 }

@@ -1,6 +1,14 @@
+use crate::bomb::BombType;
 use crate::bomberman::BombermanError::InvalidSquare;
 use crate::bomberman::{BombermanError, MazeDisplay};
 use crate::point::{Direction, Point};
+
+const WALL: &str = "W";
+const ROCK: &str = "R";
+const REDIRECTION_UP: &str = "DU";
+const REDIRECTION_DOWN: &str = "DD";
+const REDIRECTION_LEFT: &str = "DL";
+const REDIRECTION_RIGHT: &str = "DR";
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum ObstacleType {
@@ -12,6 +20,19 @@ pub(crate) enum ObstacleType {
     RedirectionRight,
 }
 
+impl ObstacleType {
+    pub(crate) fn to_string(&self) -> String {
+        match self {
+            ObstacleType::Wall => WALL.to_string(),
+            ObstacleType::Rock => ROCK.to_string(),
+            ObstacleType::RedirectionUp => REDIRECTION_UP.to_string(),
+            ObstacleType::RedirectionDown => REDIRECTION_DOWN.to_string(),
+            ObstacleType::RedirectionLeft => REDIRECTION_LEFT.to_string(),
+            ObstacleType::RedirectionRight => REDIRECTION_RIGHT.to_string(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub(crate) struct Obstacle {
     pub(crate) obstacle_type: ObstacleType,
@@ -21,12 +42,12 @@ pub(crate) struct Obstacle {
 impl Obstacle {
     pub(crate) fn new(square: String, position: Point) -> Result<Obstacle, BombermanError> {
         let obstacle_type = match square.as_str() {
-            "W" => ObstacleType::Wall,
-            "R" => ObstacleType::Rock,
-            "DU" => ObstacleType::RedirectionUp,
-            "DD" => ObstacleType::RedirectionDown,
-            "DL" => ObstacleType::RedirectionLeft,
-            "DR" => ObstacleType::RedirectionRight,
+            WALL => ObstacleType::Wall,
+            ROCK => ObstacleType::Rock,
+            REDIRECTION_UP => ObstacleType::RedirectionUp,
+            REDIRECTION_DOWN => ObstacleType::RedirectionDown,
+            REDIRECTION_LEFT => ObstacleType::RedirectionLeft,
+            REDIRECTION_RIGHT => ObstacleType::RedirectionRight,
             _ => {
                 return Err(InvalidSquare(format!(
                     "invalid obstacle {} at {}",
@@ -58,6 +79,13 @@ impl Obstacle {
         )
     }
 
+    pub(crate) fn explosion_can_pass(&self, bomb_type: BombType) -> bool {
+        match bomb_type {
+            BombType::Normal => self.obstacle_type != ObstacleType::Wall && self.obstacle_type != ObstacleType::Rock,
+            BombType::Penetrating => self.obstacle_type != ObstacleType::Wall,
+        }
+    }
+
     pub(crate) fn next_direction(&self, direction: Direction) -> Direction {
         match self.obstacle_type {
             ObstacleType::RedirectionUp => Direction::Up,
@@ -71,14 +99,7 @@ impl Obstacle {
 
 impl MazeDisplay for Obstacle {
     fn display(&self) -> String {
-        match self.obstacle_type {
-            ObstacleType::Wall => "W".to_string(),
-            ObstacleType::Rock => "R".to_string(),
-            ObstacleType::RedirectionUp => "DU".to_string(),
-            ObstacleType::RedirectionDown => "DD".to_string(),
-            ObstacleType::RedirectionLeft => "DL".to_string(),
-            ObstacleType::RedirectionRight => "DR".to_string(),
-        }
+        self.obstacle_type.to_string()
     }
 
     fn get_position(&self) -> Point {

@@ -6,37 +6,58 @@ mod point;
 
 use crate::point::Point;
 
-fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
-    if args.len() != 4 {
-        return Err(format!(
-            "Incorrect number of arguments provided, need 4 got {}",
-            args.len()
-        ));
+pub enum InputError {
+    InvalidInput(String),
+    FileError(String),
+}
+
+impl std::fmt::Display for InputError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            InputError::InvalidInput(e) => write!(f, "InvalidInput: {}", e),
+            InputError::FileError(e) => write!(f, "FileError: {}", e),
+        }
     }
-    let input_path = format!("./{}", args[0].clone());
+}
+
+// Validate the arguments provided to the program
+// Return the input file path, output file path and starting point
+fn validate_args(args: Vec<String>) -> Result<(String, String, Point), InputError> {
+    if args.len() != 4 {
+        return Err(InputError::InvalidInput(format!(
+            "incorrect number of arguments provided, need 4 got {}",
+            args.len()
+        )));
+    }
+    let input_path = format!("./{}", args[0]);
     let output_path = format!(
         "./{}{}",
         args[1],
         args[0].split('/').last().unwrap_or(args[0].as_str())
-    );
+    ); // With ./ it seems to work if path does or does not start with /
     let x = args[2].parse::<u32>();
     let y = args[3].parse::<u32>();
 
     match (x, y) {
         (Ok(x), Ok(y)) => Ok((input_path, output_path, Point::new(x, y))),
-        (_, _) => Err("x and y must be numbers and greater equal to 0".to_string()),
+        (_, _) => Err(InputError::InvalidInput(
+            "invalid starting point, x and y should be positive numbers".to_string(),
+        )),
     }
 }
 
-fn read_file(path: String) -> Result<String, String> {
+fn read_file(path: String) -> Result<String, InputError> {
     match std::fs::read_to_string(path.clone()) {
         Ok(contents) => Ok(contents),
-        Err(e) => Err(format!("Error reading file from {}: {}", path, e)),
+        Err(e) => Err(InputError::FileError(format!(
+            "error reading file {}, context {}",
+            path, e
+        ))),
     }
 }
 
 fn write_out_file(path: String, contents: String) {
-    if std::path::Path::new(&path).exists() == false {
+    if !std::path::Path::new(&path).exists() {
         match std::fs::create_dir_all(&path) {
             Ok(_) => (),
             Err(e) => {
