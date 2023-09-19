@@ -41,6 +41,16 @@ pub(crate) struct Obstacle {
 }
 
 impl Obstacle {
+
+    // Create a new obstacle from a square and a position
+    // The square should be one of the following:
+    // W: wall
+    // R: rock
+    // DU: redirection up
+    // DD: redirection down
+    // DL: redirection left
+    // DR: redirection right
+    // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Obstacle, BombermanError> {
         let obstacle_type = match square.as_str() {
             WALL => ObstacleType::Wall,
@@ -62,10 +72,12 @@ impl Obstacle {
         })
     }
 
+    // Return true if the obstacle is in the position
     pub(crate) fn is_in_position(&self, position: Point) -> bool {
         self.position == position
     }
 
+    // Return true if the explosion can pass through the obstacle
     pub(crate) fn explosion_can_pass(&self, bomb_type: BombType) -> bool {
         match bomb_type {
             BombType::Normal => {
@@ -75,6 +87,8 @@ impl Obstacle {
         }
     }
 
+    // Return the next direction to take if the obstacle is a redirection
+    // Otherwise return the same direction
     pub(crate) fn next_direction(&self, direction: Direction) -> Direction {
         match self.obstacle_type {
             ObstacleType::RedirectionUp => Direction::Up,

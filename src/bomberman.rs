@@ -46,6 +46,8 @@ pub(crate) trait MazeDisplay {
 }
 
 impl Bomberman {
+    // Create a new game from a string
+    // The string should be a square matrix of squares separated by spaces
     pub(crate) fn new(file_string: String) -> Result<Bomberman, BombermanError> {
         let lines: Vec<&str> = file_string.split('\n').collect();
 
@@ -75,6 +77,7 @@ impl Bomberman {
         Ok(game)
     }
 
+    // Add a square to the game
     fn add_square(&mut self, square: String, point: Point) -> Option<BombermanError> {
         let first_char = square.chars().next().unwrap_or('_');
 
@@ -165,9 +168,10 @@ impl Bomberman {
             self.next_turn()
         }
 
-        Ok(self.display_lines())
+        Ok(self.to_string())
     }
 
+    // Return all the displayable objects
     fn get_all_displayable(&self) -> Vec<&dyn MazeDisplay> {
         let mut displayable: Vec<&dyn MazeDisplay> = Vec::new();
         displayable.extend(self.enemies.iter().map(|enemy| enemy as &dyn MazeDisplay));
@@ -190,15 +194,16 @@ impl Bomberman {
         });
         matrix
     }
+}
 
-    // Convert game maze to string
-    pub(crate) fn display_lines(&self) -> String {
+impl Display for Bomberman {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let mut display = String::new();
         let matrix = self.to_matrix();
         for line in matrix {
             display.push_str(&line.join(" "));
             display.push('\n');
         }
-        display
+        write!(f, "{}", display)
     }
 }

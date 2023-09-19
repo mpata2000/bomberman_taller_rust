@@ -17,6 +17,9 @@ pub struct Enemy {
 }
 
 impl Enemy {
+    // Create a new enemy from a square and a position
+    // The square should start with F and be followed by a number between 1 and 3 included
+    // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
         if !square.starts_with('F') {
             return Err(InvalidSquare(format!(
@@ -51,6 +54,8 @@ impl Enemy {
 }
 
 impl CanBeHit for Enemy {
+    // If the enemy is Idle, hit it and set the state to Hit
+    // If the enemy is Hit or Dead, do nothing
     fn hit(&mut self) {
         match self.state {
             EnemyState::Idle => {
@@ -66,12 +71,14 @@ impl CanBeHit for Enemy {
         }
     }
 
+    // Return true if the enemy is in the given position
     fn in_position(&self, position: Point) -> bool {
         self.position == position
     }
 }
 
 impl MazeDisplay for Enemy {
+    // Return the string to display
     fn display(&self) -> String {
         if self.state == EnemyState::Dead {
             return "_".to_string();
@@ -79,6 +86,7 @@ impl MazeDisplay for Enemy {
         format!("F{}", self.health)
     }
 
+    // Return the position of the object
     fn get_position(&self) -> Point {
         self.position
     }
