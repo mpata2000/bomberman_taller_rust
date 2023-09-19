@@ -74,7 +74,7 @@ impl CanBeHit for Enemy {
 
 impl MazeDisplay for Enemy {
     fn display(&self) -> String {
-        if self.state != EnemyState::Idle {
+        if self.state == EnemyState::Dead {
             return "_".to_string();
         }
         format!("F{}", self.health)
@@ -99,6 +99,15 @@ mod test {
                 position: Point::new(0, 0),
                 state: EnemyState::Idle,
             })
+        );
+    }
+
+    #[test]
+    fn test_new_enemy_invalid_type() {
+        let enemy = Enemy::new("A3".to_string(), Point::new(0, 0));
+        assert_eq!(
+            enemy,
+            Err(InvalidSquare("invalid enemy A3 at (0, 0)".to_string()))
         );
     }
 
@@ -147,7 +156,7 @@ mod test {
     }
 
     #[test]
-    fn test_new_enemy_invalid_health_cero() {
+    fn test_new_enemy_invalid_health_zero() {
         let enemy = Enemy::new("F0".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
@@ -155,5 +164,188 @@ mod test {
                 "Invalid enemy health F0 at (0, 0). It should be a positive number".to_string()
             ))
         );
+    }
+
+    #[test]
+    fn test_reset_state_from_hit() {
+        let mut enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Hit,
+        };
+        enemy.reset_state();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 3,
+                position: Point::new(0, 0),
+                state: EnemyState::Idle,
+            }
+        );
+    }
+
+    #[test]
+    fn test_reset_state_from_dead() {
+        let mut enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Dead,
+        };
+        enemy.reset_state();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 3,
+                position: Point::new(0, 0),
+                state: EnemyState::Dead,
+            }
+        );
+    }
+
+    #[test]
+    fn test_reset_state_from_idle() {
+        let mut enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Idle,
+        };
+        enemy.reset_state();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 3,
+                position: Point::new(0, 0),
+                state: EnemyState::Idle,
+            }
+        );
+    }
+
+    #[test]
+    fn test_hit_from_idle() {
+        let mut enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Idle,
+        };
+        enemy.hit();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 2,
+                position: Point::new(0, 0),
+                state: EnemyState::Hit,
+            }
+        );
+    }
+
+    #[test]
+    fn test_hit_from_hit() {
+        let mut enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Hit,
+        };
+        enemy.hit();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 3,
+                position: Point::new(0, 0),
+                state: EnemyState::Hit,
+            }
+        );
+    }
+
+    #[test]
+    fn test_hit_from_dead() {
+        let mut enemy = Enemy {
+            health: 0,
+            position: Point::new(0, 0),
+            state: EnemyState::Dead,
+        };
+        enemy.hit();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 0,
+                position: Point::new(0, 0),
+                state: EnemyState::Dead,
+            }
+        );
+    }
+
+    #[test]
+    fn test_hit_to_dead() {
+        let mut enemy = Enemy {
+            health: 1,
+            position: Point::new(0, 0),
+            state: EnemyState::Idle,
+        };
+        enemy.hit();
+        assert_eq!(
+            enemy,
+            Enemy {
+                health: 0,
+                position: Point::new(0, 0),
+                state: EnemyState::Dead,
+            }
+        );
+    }
+
+    #[test]
+    fn test_in_position_equal_position_at_position() {
+        let enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Idle,
+        };
+        let position = Point::new(0, 0);
+        let result = enemy.in_position(position);
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn test_in_position_equal_position_not_at_position() {
+        let enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Idle,
+        };
+        let position = Point::new(0, 1);
+        let result = enemy.in_position(position);
+        assert_eq!(result, false);
+    }
+
+    #[test]
+    fn test_display_from_idle() {
+        let enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Idle,
+        };
+        let result = enemy.display();
+        assert_eq!(result, "F3".to_string());
+    }
+
+    #[test]
+    fn test_display_from_hit() {
+        let enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Hit,
+        };
+        let result = enemy.display();
+        assert_eq!(result, "F3".to_string());
+    }
+
+    #[test]
+    fn test_display_from_dead() {
+        let enemy = Enemy {
+            health: 3,
+            position: Point::new(0, 0),
+            state: EnemyState::Dead,
+        };
+        let result = enemy.display();
+        assert_eq!(result, "_".to_string());
     }
 }

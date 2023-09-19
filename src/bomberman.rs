@@ -167,7 +167,7 @@ impl Bomberman {
         }
 
         while let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_active()) {
-            let afected_positions = bomb.explode(&self.obstacles);
+            let afected_positions = bomb.explode(self.size,&self.obstacles);
             for position in afected_positions {
                 match self.get_hittable_in_position(position) {
                     Some(hittable) => (*hittable).hit(),

@@ -1,6 +1,7 @@
 use crate::bomberman::{BombermanError, CanBeHit, MazeDisplay};
 use crate::obstacle::Obstacle;
 use crate::point::{Direction, Point};
+use std::collections::HashSet;
 
 #[derive(Debug, PartialEq)]
 enum BombType {
@@ -63,15 +64,16 @@ impl Bomb {
         }
     }
 
-    pub(crate) fn explode(&mut self, obstacles: &Vec<Obstacle>) -> Vec<Point> {
+    pub(crate) fn explode(&mut self,maze_size: u32, obstacles: &Vec<Obstacle>) -> Vec<Point> {
         self.bomb_state = BombState::Exploded;
-        let mut explosion_points = vec![self.position];
+        let mut explosion_points = HashSet::new();
+        explosion_points.insert(self.position.clone());
 
         for dir in Direction::iter() {
             let mut move_dir = dir;
             let mut affected_point = self.position;
             for _ in 0..self.explotion_distance {
-                affected_point = match affected_point.next_point(move_dir) {
+                affected_point = match affected_point.next_point(move_dir, maze_size) {
                     Ok(x) => x,
                     Err(_) => break,
                 };
@@ -86,14 +88,15 @@ impl Bomb {
                         if !self.bomb_can_pass(obstacle) {
                             break;
                         }
-                        explosion_points.push(affected_point);
+                        explosion_points.insert(affected_point);
                     }
-                    None => explosion_points.push(affected_point),
+                    None => {
+                        explosion_points.insert(affected_point);
+                    }
                 }
             }
         }
-
-        explosion_points
+        Vec::from_iter(explosion_points)
     }
 }
 
