@@ -7,10 +7,10 @@ use crate::point::{Direction, Point};
 pub const WALL: &str = "W";
 pub const ROCK: &str = "R";
 pub const  REDIRECTION: &str = "D";
-const REDIRECTION_UP: &str = "DU";
-const REDIRECTION_DOWN: &str = "DD";
-const REDIRECTION_LEFT: &str = "DL";
-const REDIRECTION_RIGHT: &str = "DR";
+pub const REDIRECTION_UP: &str = "DU";
+pub const REDIRECTION_DOWN: &str = "DD";
+pub const REDIRECTION_LEFT: &str = "DL";
+pub const REDIRECTION_RIGHT: &str = "DR";
 
 // Return true if the square is an obstacle
 pub fn is_obstacle(square: &str) -> bool {
