@@ -44,9 +44,8 @@ impl Enemy {
 
     // If the enemy is hit, reset the state to NotHit for the next turn
     pub(crate) fn reset_state(&mut self) {
-        match self.state {
-            EnemyState::Hit => self.state = EnemyState::Idle,
-            _ => (),
+        if self.state == EnemyState::Hit {
+            self.state = EnemyState::Idle
         }
     }
 }

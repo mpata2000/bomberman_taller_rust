@@ -64,10 +64,13 @@ mod tests {
     fn test_next_point_up_from_start_throw_error() {
         let point = Point::new(0, 0);
         let direction = Direction::Up;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(
             result,
-            Err(format!("Cannot move {:?} from the {} of the board, it goes out of bounds", direction, point))
+            Err(format!(
+                "Cannot move {:?} from the {} of the board, it goes out of bounds",
+                direction, point
+            ))
         );
     }
 
@@ -75,10 +78,13 @@ mod tests {
     fn test_next_point_left_from_start_throw_error() {
         let point = Point::new(0, 0);
         let direction = Direction::Left;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(
             result,
-            Err(format!("Cannot move {:?} from the {} of the board, it goes out of bounds", direction, point))
+            Err(format!(
+                "Cannot move {:?} from the {} of the board, it goes out of bounds",
+                direction, point
+            ))
         );
     }
 
@@ -86,7 +92,7 @@ mod tests {
     fn test_next_point_down_from_start() {
         let point = Point::new(0, 0);
         let direction = Direction::Down;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(0, 1)));
     }
 
@@ -94,7 +100,7 @@ mod tests {
     fn test_next_point_right_from_start() {
         let point = Point::new(0, 0);
         let direction = Direction::Right;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(1, 0)));
     }
 
@@ -102,7 +108,7 @@ mod tests {
     fn test_next_point_up_from_middle() {
         let point = Point::new(0, 1);
         let direction = Direction::Up;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(0, 0)));
     }
 
@@ -110,7 +116,7 @@ mod tests {
     fn test_next_point_left_from_middle() {
         let point = Point::new(1, 0);
         let direction = Direction::Left;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(0, 0)));
     }
 
@@ -118,7 +124,7 @@ mod tests {
     fn test_next_point_down_from_middle() {
         let point = Point::new(0, 0);
         let direction = Direction::Down;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(0, 1)));
     }
 
@@ -126,7 +132,7 @@ mod tests {
     fn test_next_point_right_from_middle() {
         let point = Point::new(0, 0);
         let direction = Direction::Right;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(1, 0)));
     }
 
@@ -134,10 +140,13 @@ mod tests {
     fn test_next_point_down_from_end_throw_error() {
         let point = Point::new(0, 2);
         let direction = Direction::Down;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(
             result,
-            Err(format!("Cannot move {:?} from the {} of the board, it goes out of bounds", direction, point))
+            Err(format!(
+                "Cannot move {:?} from the {} of the board, it goes out of bounds",
+                direction, point
+            ))
         );
     }
 
@@ -145,10 +154,13 @@ mod tests {
     fn test_next_point_right_from_end_throw_error() {
         let point = Point::new(2, 0);
         let direction = Direction::Right;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(
             result,
-            Err(format!("Cannot move {:?} from the {} of the board, it goes out of bounds", direction, point))
+            Err(format!(
+                "Cannot move {:?} from the {} of the board, it goes out of bounds",
+                direction, point
+            ))
         );
     }
 
@@ -156,7 +168,7 @@ mod tests {
     fn test_next_point_up_from_end() {
         let point = Point::new(0, 2);
         let direction = Direction::Up;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(0, 1)));
     }
 
@@ -164,7 +176,7 @@ mod tests {
     fn test_next_point_left_from_end() {
         let point = Point::new(2, 0);
         let direction = Direction::Left;
-        let result = point.next_point(direction,2);
+        let result = point.next_point(direction, 2);
         assert_eq!(result, Ok(Point::new(1, 0)));
     }
 }

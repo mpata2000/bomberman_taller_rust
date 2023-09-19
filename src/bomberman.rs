@@ -49,20 +49,17 @@ pub(crate) trait MazeDisplay {
 
 impl Bomberman {
     pub(crate) fn new(file_string: String) -> Result<Bomberman, BombermanError> {
-        let lines: Vec<&str> = file_string.split("\n").collect();
-        let enemies: Vec<Enemy> = Vec::new();
-        let bombs: Vec<Bomb> = Vec::new();
-        let obstacles: Vec<Obstacle> = Vec::new();
+        let lines: Vec<&str> = file_string.split('\n').collect();
 
         let mut game = Bomberman {
-            enemies,
-            bombs,
-            obstacles,
+            enemies: Vec::new(),
+            bombs: Vec::new(),
+            obstacles: Vec::new(),
             size: lines.len() as u32,
         };
 
         for (y, line) in lines.iter().enumerate() {
-            let squares: Vec<&str> = line.split(" ").collect();
+            let squares: Vec<&str> = line.split(' ').collect();
             if squares.len() != game.size as usize {
                 return Err(BombermanError::MazeNotSquare(format!(
                     "Maze has {} lines and {} columns",
@@ -72,56 +69,48 @@ impl Bomberman {
             }
             for (x, square) in squares.iter().enumerate() {
                 let point = Point::new(x as u32, y as u32);
-                match game.add_square(square.to_string(), point) {
-                    Ok(_) => (),
-                    Err(e) => return Err(e),
+                if let Some(e) = game.add_square(square.to_string(), point) {
+                    return Err(e);
                 }
             }
         }
         Ok(game)
     }
 
-    fn add_square(&mut self, square: String, point: Point) -> Result<(), BombermanError> {
-        let first_char = match square.chars().next() {
-            Some(first_char) => first_char,
-            None => {
-                return Err(BombermanError::InvalidSquare(format!(
-                    "Empty square string at {}",
-                    point
-                )))
-            }
-        };
+    fn add_square(&mut self, square: String, point: Point) -> Option<BombermanError> {
+        let first_char = square.chars().next().unwrap_or('_');
+
         match first_char {
             'F' => {
                 let enemy = match Enemy::new(square, point) {
                     Ok(enemy) => enemy,
-                    Err(e) => return Err(e),
+                    Err(e) => return Some(e),
                 };
                 self.enemies.push(enemy);
             }
             'B' | 'S' => {
                 let bomb = match Bomb::new(square, point) {
                     Ok(bomb) => bomb,
-                    Err(e) => return Err(e),
+                    Err(e) => return Some(e),
                 };
                 self.bombs.push(bomb);
             }
             'R' | 'W' | 'D' => {
                 let obstacle = match Obstacle::new(square, point) {
                     Ok(obstacle) => obstacle,
-                    Err(e) => return Err(e),
+                    Err(e) => return Some(e),
                 };
                 self.obstacles.push(obstacle);
             }
             '_' => (),
             _ => {
-                return Err(BombermanError::InvalidSquare(format!(
+                return Some(BombermanError::InvalidSquare(format!(
                     "Invalid square: {} at x: {}, y: {}",
                     square, point.x, point.y
                 )))
             }
         }
-        Ok(())
+        None
     }
 
     // Set game for next turn
@@ -167,12 +156,9 @@ impl Bomberman {
         }
 
         while let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_active()) {
-            let afected_positions = bomb.explode(self.size,&self.obstacles);
+            let afected_positions = bomb.explode(self.size, &self.obstacles);
             for position in afected_positions {
-                match self.get_hittable_in_position(position) {
-                    Some(hittable) => (*hittable).hit(),
-                    None => (),
-                }
+                if let Some(hittable) = self.get_hittable_in_position(position) { hittable.hit() }
             }
             self.next_turn()
         }

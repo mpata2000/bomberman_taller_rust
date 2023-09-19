@@ -64,10 +64,10 @@ impl Bomb {
         }
     }
 
-    pub(crate) fn explode(&mut self,maze_size: u32, obstacles: &Vec<Obstacle>) -> Vec<Point> {
+    pub(crate) fn explode(&mut self, maze_size: u32, obstacles: &[Obstacle]) -> Vec<Point> {
         self.bomb_state = BombState::Exploded;
         let mut explosion_points = HashSet::new();
-        explosion_points.insert(self.position.clone());
+        explosion_points.insert(self.position);
 
         for dir in Direction::iter() {
             let mut move_dir = dir;
@@ -80,7 +80,7 @@ impl Bomb {
 
                 let obstacle = obstacles
                     .iter()
-                    .find(|obstacle| obstacle.is_in_position(affected_point.clone()));
+                    .find(|obstacle| obstacle.is_in_position(affected_point));
 
                 match obstacle {
                     Some(obstacle) => {
@@ -102,10 +102,7 @@ impl Bomb {
 
 impl CanBeHit for Bomb {
     fn hit(&mut self) {
-        match self.bomb_state {
-            BombState::NotExploded => self.bomb_state = BombState::Activated,
-            _ => (),
-        }
+        if self.bomb_state == BombState::NotExploded { self.bomb_state = BombState::Activated }
     }
 
     fn in_position(&self, position: Point) -> bool {
