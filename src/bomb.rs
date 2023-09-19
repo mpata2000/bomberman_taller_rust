@@ -3,6 +3,9 @@ use crate::obstacle::Obstacle;
 use crate::point::{Direction, Point};
 use std::collections::HashSet;
 
+pub const NORMAL_BOMB: &str = "B";
+pub const PENETRATING_BOMB: &str = "S";
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum BombType {
     Normal,
@@ -28,9 +31,9 @@ impl Bomb {
     // The square should start with B or S and be followed by a number greater than 0
     // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Bomb, BombermanError> {
-        let bomb_type = match square.chars().next() {
-            Some('B') => BombType::Normal,
-            Some('S') => BombType::Penetrating,
+        let bomb_type = match square.get(..1) {
+            Some(NORMAL_BOMB) => BombType::Normal,
+            Some(PENETRATING_BOMB) => BombType::Penetrating,
             _ => {
                 return Err(BombermanError::InvalidSquare(format!(
                     "invalid bomb {} at {}. It should start with B or S",

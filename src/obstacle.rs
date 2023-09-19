@@ -4,12 +4,18 @@ use crate::bomberman::BombermanError::InvalidSquare;
 use crate::bomberman::{BombermanError, MazeDisplay};
 use crate::point::{Direction, Point};
 
-const WALL: &str = "W";
-const ROCK: &str = "R";
+pub const WALL: &str = "W";
+pub const ROCK: &str = "R";
+pub const  REDIRECTION: &str = "D";
 const REDIRECTION_UP: &str = "DU";
 const REDIRECTION_DOWN: &str = "DD";
 const REDIRECTION_LEFT: &str = "DL";
 const REDIRECTION_RIGHT: &str = "DR";
+
+// Return true if the square is an obstacle
+pub fn is_obstacle(square: &str) -> bool {
+    square == WALL || square == ROCK || square.starts_with(REDIRECTION)
+}
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum ObstacleType {

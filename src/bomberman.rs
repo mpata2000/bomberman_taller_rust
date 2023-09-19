@@ -3,6 +3,7 @@ use crate::enemy::Enemy;
 use crate::obstacle::Obstacle;
 use crate::point::Point;
 use std::fmt::Display;
+use crate::{bomb, enemy, obstacle};
 
 #[derive(Debug)]
 pub(crate) struct Bomberman {
@@ -79,31 +80,29 @@ impl Bomberman {
 
     // Add a square to the game
     fn add_square(&mut self, square: String, point: Point) -> Option<BombermanError> {
-        let first_char = square.chars().next().unwrap_or('_');
-
-        match first_char {
-            'F' => {
+        match square.get(..1) {
+            Some(enemy::ENEMY) => {
                 let enemy = match Enemy::new(square, point) {
                     Ok(enemy) => enemy,
                     Err(e) => return Some(e),
                 };
                 self.enemies.push(enemy);
             }
-            'B' | 'S' => {
+            Some(bomb::NORMAL_BOMB) | Some(bomb::PENETRATING_BOMB) => {
                 let bomb = match Bomb::new(square, point) {
                     Ok(bomb) => bomb,
                     Err(e) => return Some(e),
                 };
                 self.bombs.push(bomb);
             }
-            'R' | 'W' | 'D' => {
+            Some(x) if obstacle::is_obstacle(x) => {
                 let obstacle = match Obstacle::new(square, point) {
                     Ok(obstacle) => obstacle,
                     Err(e) => return Some(e),
                 };
                 self.obstacles.push(obstacle);
             }
-            '_' => (),
+            Some("_") => (),
             _ => {
                 return Some(BombermanError::InvalidSquare(format!(
                     "The square {} at position ({}, {}) is invalid",

@@ -2,6 +2,8 @@ use crate::bomberman::BombermanError::InvalidSquare;
 use crate::bomberman::{BombermanError, CanBeHit, MazeDisplay};
 use crate::point::Point;
 
+pub const ENEMY: &str = "F";
+
 #[derive(Debug, PartialEq)]
 enum EnemyState {
     Hit,
@@ -21,7 +23,7 @@ impl Enemy {
     // The square should start with F and be followed by a number between 1 and 3 included
     // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
-        if !square.starts_with('F') {
+        if !square.starts_with(ENEMY) {
             return Err(InvalidSquare(format!(
                 "invalid enemy {} at {}",
                 square, position
