@@ -4,8 +4,10 @@ mod enemy;
 mod obstacle;
 mod point;
 
+use bomberman::Bomberman;
+
 use crate::point::Point;
-use std;
+use std::{self, ops::Add};
 
 fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     if args.len() != 4 {
@@ -32,36 +34,50 @@ fn read_file(path: String) -> Result<String, String> {
     }
 }
 
+fn write_out_file(path: String, file_name: String, contents: String) {
+    match std::fs::create_dir_all(&path) {
+        Ok(_) => (),
+        Err(e) => {
+            println!("Error creating directory: {}", e);
+            return;
+        }
+    }
+    
+    let full_path = format!("{}/{}", path, file_name);
+    match std::fs::write(full_path, contents) {
+        Ok(_) => (),
+        Err(e) => println!("Error writing file: {}", e),
+    }
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    let (input_path, output_path, start_point) = match validate_args(args) {
+    let (input_file, output_path, start_point) = match validate_args(args) {
         Ok((input_path, output_path, point)) => (input_path, output_path, point),
         Err(e) => {
             println!("{}", e);
             return;
         }
     };
-
-    let contents = match read_file(input_path) {
+    let contents = match read_file(format!("./{}", input_file)) {
         Ok(contents) => contents,
         Err(e) => {
             println!("{}", e);
             return;
         }
     };
-
     let mut game = match bomberman::Bomberman::new(contents) {
         Ok(game) => game,
         Err(e) => {
-            println!("{}", e);
+            write_out_file(output_path,input_file, e.to_string());
             return;
         }
     };
 
-    println!("{:#?}", game);
+    let result = match game.play(start_point){
+        Ok(result) => result,
+        Err(e) => e.to_string(),
+    };
 
-    let result = game.play(start_point);
-    println!("{:#?}", result);
-
-    println!("{:#?}", game);
+    write_out_file(output_path,input_file, result);
 }

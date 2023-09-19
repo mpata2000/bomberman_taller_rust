@@ -140,7 +140,9 @@ impl Bomberman {
         hittable
     }
 
-    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<Vec<Vec<String>>, BombermanError> {
+    // Plays the game with the given starting bomb
+    // Returns the string of the maze after the game or an error
+    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String, BombermanError> {
         let first_bomb = self
             .bombs
             .iter_mut()
@@ -163,7 +165,7 @@ impl Bomberman {
             self.next_turn()
         }
 
-        Ok(self.to_matrix())
+        Ok(self.display_lines())
     }
 
     fn get_all_displayable(&self) -> Vec<&dyn MazeDisplay> {
@@ -179,7 +181,7 @@ impl Bomberman {
     }
 
     // Convert game to matrix
-    pub(crate) fn to_matrix(&self) -> Vec<Vec<String>> {
+    fn to_matrix(&self) -> Vec<Vec<String>> {
         let mut matrix = vec![vec!["_".to_string(); self.size as usize]; self.size as usize];
         let displayable = self.get_all_displayable();
         displayable.iter().for_each(|displayable| {
@@ -187,5 +189,16 @@ impl Bomberman {
             matrix[position.y as usize][position.x as usize] = displayable.display();
         });
         matrix
+    }
+
+    // Convert game maze to string
+    pub(crate) fn display_lines(&self) -> String {
+        let mut display = String::new();
+        let matrix = self.to_matrix();
+        for line in matrix {
+            display.push_str(&line.join(" "));
+            display.push('\n');
+        }
+        display
     }
 }
