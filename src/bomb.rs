@@ -20,7 +20,7 @@ pub(crate) struct Bomb {
     bomb_type: BombType,
     bomb_state: BombState,
     position: Point,
-    explotion_distance: u32,
+    explosion_distance: u32,
 }
 
 impl Bomb {
@@ -36,11 +36,11 @@ impl Bomb {
             }
         };
 
-        let explotion_distance = match square[1..].parse::<u32>() {
+        let explosion_distance = match square[1..].parse::<u32>() {
             Ok(bomb_distance) if bomb_distance > 0 => bomb_distance,
             _ => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "invalid bomb distance {} at {} it shoudld be positive number greater than 0",
+                    "invalid bomb distance {} at {} it should be positive number greater than 0",
                     square, position
                 )))
             }
@@ -49,7 +49,7 @@ impl Bomb {
             bomb_type,
             bomb_state: BombState::Idle,
             position,
-            explotion_distance,
+            explosion_distance,
         })
     }
 
@@ -71,7 +71,7 @@ impl Bomb {
         for dir in Direction::iter() {
             let mut move_dir = dir;
             let mut affected_point = self.position;
-            for _ in 0..self.explotion_distance {
+            for _ in 0..self.explosion_distance {
                 affected_point = match affected_point.next_point(move_dir, maze_size) {
                     Ok(x) => x,
                     Err(_) => break,
@@ -102,7 +102,9 @@ impl Bomb {
 impl CanBeHit for Bomb {
     // Bomb only change state when it is idle, else it will be ignored
     fn hit(&mut self) {
-        if self.bomb_state == BombState::Idle { self.bomb_state = BombState::Activated }
+        if self.bomb_state == BombState::Idle {
+            self.bomb_state = BombState::Activated
+        }
     }
 
     fn in_position(&self, position: Point) -> bool {
@@ -117,8 +119,8 @@ impl MazeDisplay for Bomb {
             return "_".to_string();
         }
         match self.bomb_type {
-            BombType::Normal => format!("B{}", self.explotion_distance),
-            BombType::Penetrating => format!("S{}", self.explotion_distance),
+            BombType::Normal => format!("B{}", self.explosion_distance),
+            BombType::Penetrating => format!("S{}", self.explosion_distance),
         }
     }
 
@@ -128,7 +130,7 @@ impl MazeDisplay for Bomb {
 }
 
 #[cfg(test)]
-mod test{
+mod test {
     use super::*;
 
     #[test]
@@ -140,7 +142,7 @@ mod test{
                 bomb_type: BombType::Normal,
                 bomb_state: BombState::Idle,
                 position: Point::new(0, 0),
-                explotion_distance: 3,
+                explosion_distance: 3,
             })
         );
     }
@@ -154,7 +156,7 @@ mod test{
                 bomb_type: BombType::Penetrating,
                 bomb_state: BombState::Idle,
                 position: Point::new(0, 0),
-                explotion_distance: 3,
+                explosion_distance: 3,
             })
         );
     }
@@ -176,7 +178,8 @@ mod test{
         assert_eq!(
             bomb,
             Err(BombermanError::InvalidSquare(
-                "invalid bomb distance B0 at (0, 0) it shoudld be positive number greater than 0".to_string()
+                "invalid bomb distance B0 at (0, 0) it should be positive number greater than 0"
+                    .to_string()
             ))
         );
     }
@@ -187,7 +190,8 @@ mod test{
         assert_eq!(
             bomb,
             Err(BombermanError::InvalidSquare(
-                "invalid bomb distance Bx at (0, 0) it shoudld be positive number greater than 0".to_string()
+                "invalid bomb distance Bx at (0, 0) it should be positive number greater than 0"
+                    .to_string()
             ))
         );
     }
@@ -198,7 +202,7 @@ mod test{
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         assert_eq!(bomb.is_active(), false);
         bomb.bomb_state = BombState::Activated;
@@ -211,7 +215,7 @@ mod test{
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         bomb.hit();
         assert_eq!(bomb.bomb_state, BombState::Activated);
@@ -223,7 +227,7 @@ mod test{
             bomb_type: BombType::Normal,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         bomb.hit();
         assert_eq!(bomb.bomb_state, BombState::Activated);
@@ -235,7 +239,7 @@ mod test{
             bomb_type: BombType::Normal,
             bomb_state: BombState::Exploded,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         bomb.hit();
         assert_eq!(bomb.bomb_state, BombState::Exploded);
@@ -247,7 +251,7 @@ mod test{
             bomb_type: BombType::Normal,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         let obstacles = vec![
             Obstacle::new("DU".to_string(), Point::new(0, 0)).unwrap(),
@@ -255,7 +259,7 @@ mod test{
             Obstacle::new("DL".to_string(), Point::new(0, 0)).unwrap(),
             Obstacle::new("DR".to_string(), Point::new(0, 0)).unwrap(),
         ];
-        
+
         assert_eq!(bomb.bomb_can_pass(&obstacles[0]), true);
         assert_eq!(bomb.bomb_can_pass(&obstacles[1]), true);
         assert_eq!(bomb.bomb_can_pass(&obstacles[2]), true);
@@ -263,12 +267,12 @@ mod test{
     }
 
     #[test]
-    fn test_penetreting_bomb_can_pass_any_redirection(){
+    fn test_penetreting_bomb_can_pass_any_redirection() {
         let mut bomb = Bomb {
             bomb_type: BombType::Penetrating,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         let obstacles = vec![
             Obstacle::new("DU".to_string(), Point::new(0, 0)).unwrap(),
@@ -276,7 +280,7 @@ mod test{
             Obstacle::new("DL".to_string(), Point::new(0, 0)).unwrap(),
             Obstacle::new("DR".to_string(), Point::new(0, 0)).unwrap(),
         ];
-        
+
         assert_eq!(bomb.bomb_can_pass(&obstacles[0]), true);
         assert_eq!(bomb.bomb_can_pass(&obstacles[1]), true);
         assert_eq!(bomb.bomb_can_pass(&obstacles[2]), true);
@@ -284,18 +288,18 @@ mod test{
     }
 
     #[test]
-    fn test_bomb_can_not_pass_wall(){
+    fn test_bomb_can_not_pass_wall() {
         let mut penetrating_bomb = Bomb {
             bomb_type: BombType::Penetrating,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
         let mut normal_bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
 
         let obstalce = Obstacle::new("W".to_string(), Point::new(0, 0)).unwrap();
@@ -304,12 +308,12 @@ mod test{
     }
 
     #[test]
-    fn test_normal_bomb_can_not_pass_rock(){
+    fn test_normal_bomb_can_not_pass_rock() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
 
         let obstalce = Obstacle::new("R".to_string(), Point::new(0, 0)).unwrap();
@@ -317,17 +321,15 @@ mod test{
     }
 
     #[test]
-    fn test_penetreting_bomb_can_pass_rock(){
+    fn test_penetreting_bomb_can_pass_rock() {
         let mut bomb = Bomb {
             bomb_type: BombType::Penetrating,
             bomb_state: BombState::Activated,
             position: Point::new(0, 0),
-            explotion_distance: 3,
+            explosion_distance: 3,
         };
 
         let obstalce = Obstacle::new("R".to_string(), Point::new(0, 0)).unwrap();
         assert_eq!(bomb.bomb_can_pass(&obstalce), true);
     }
-
-    
 }

@@ -181,9 +181,7 @@ mod test {
         let result = Obstacle::new(square, position);
         assert_eq!(
             result,
-            Err(InvalidSquare(
-                "invalid obstacle A at (0, 0)".to_string()
-            ))
+            Err(InvalidSquare("invalid obstacle A at (0, 0)".to_string()))
         );
     }
 

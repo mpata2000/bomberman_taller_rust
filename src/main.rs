@@ -4,10 +4,7 @@ mod enemy;
 mod obstacle;
 mod point;
 
-use bomberman::Bomberman;
-
 use crate::point::Point;
-use std::{self, ops::Add};
 
 fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     if args.len() != 4 {
@@ -16,8 +13,12 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
             args.len()
         ));
     }
-    let input_path = args[0].clone();
-    let output_path = args[1].clone();
+    let input_path = format!("./{}", args[0].clone());
+    let output_path = format!(
+        "./{}{}",
+        args[1],
+        args[0].split('/').last().unwrap_or(args[0].as_str())
+    );
     let x = args[2].parse::<u32>();
     let y = args[3].parse::<u32>();
 
@@ -28,23 +29,24 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
 }
 
 fn read_file(path: String) -> Result<String, String> {
-    match std::fs::read_to_string(path) {
+    match std::fs::read_to_string(path.clone()) {
         Ok(contents) => Ok(contents),
-        Err(e) => Err(format!("Error reading file: {}", e)),
+        Err(e) => Err(format!("Error reading file from {}: {}", path, e)),
     }
 }
 
-fn write_out_file(path: String, file_name: String, contents: String) {
-    match std::fs::create_dir_all(&path) {
-        Ok(_) => (),
-        Err(e) => {
-            println!("Error creating directory: {}", e);
-            return;
+fn write_out_file(path: String, contents: String) {
+    if std::path::Path::new(&path).exists() == false {
+        match std::fs::create_dir_all(&path) {
+            Ok(_) => (),
+            Err(e) => {
+                println!("Error creating directory {}: {}", path, e);
+                return;
+            }
         }
     }
-    
-    let full_path = format!("{}{}", path, file_name);
-    match std::fs::write(full_path, contents) {
+
+    match std::fs::write(path, contents) {
         Ok(_) => (),
         Err(e) => println!("Error writing file: {}", e),
     }
@@ -59,7 +61,7 @@ fn main() {
             return;
         }
     };
-    let contents = match read_file(format!("./{}", input_file)) {
+    let contents = match read_file(input_file) {
         Ok(contents) => contents,
         Err(e) => {
             println!("{}", e);
@@ -69,15 +71,15 @@ fn main() {
     let mut game = match bomberman::Bomberman::new(contents) {
         Ok(game) => game,
         Err(e) => {
-            write_out_file(output_path,input_file, e.to_string());
+            write_out_file(output_path, e.to_string());
             return;
         }
     };
 
-    let result = match game.play(start_point){
+    let result = match game.play(start_point) {
         Ok(result) => result,
         Err(e) => e.to_string(),
     };
 
-    write_out_file(format!("./{}",output_path),input_file, result);
+    write_out_file(output_path, result);
 }

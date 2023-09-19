@@ -16,7 +16,6 @@ pub(crate) struct Bomberman {
 pub(crate) enum BombermanError {
     MazeNotSquare(String),
     InvalidSquare(String),
-    EmptySquare(String),
     NoBombInStartingPosition(String),
 }
 
@@ -25,7 +24,6 @@ impl Display for BombermanError {
         match self {
             BombermanError::MazeNotSquare(e) => write!(f, "MazeNotSquare: {}", e),
             BombermanError::InvalidSquare(e) => write!(f, "InvalidSquare: {}", e),
-            BombermanError::EmptySquare(e) => write!(f, "EmptySquare: {}", e),
             BombermanError::NoBombInStartingPosition(e) => {
                 write!(f, "NoBombInStartingPosition: {}", e)
             }
@@ -160,7 +158,9 @@ impl Bomberman {
         while let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_active()) {
             let afected_positions = bomb.explode(self.size, &self.obstacles);
             for position in afected_positions {
-                if let Some(hittable) = self.get_hittable_in_position(position) { hittable.hit() }
+                if let Some(hittable) = self.get_hittable_in_position(position) {
+                    hittable.hit()
+                }
             }
             self.next_turn()
         }
