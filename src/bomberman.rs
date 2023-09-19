@@ -62,7 +62,7 @@ impl Bomberman {
             let squares: Vec<&str> = line.split(' ').collect();
             if squares.len() != game.size as usize {
                 return Err(BombermanError::MazeNotSquare(format!(
-                    "Maze has {} lines and {} columns",
+                    "Maze has {} lines and {} columns, it should be equal",
                     game.size,
                     squares.len()
                 )));
@@ -105,7 +105,7 @@ impl Bomberman {
             '_' => (),
             _ => {
                 return Some(BombermanError::InvalidSquare(format!(
-                    "Invalid square: {} at x: {}, y: {}",
+                    "The square {} at position ({}, {}) is invalid",
                     square, point.x, point.y
                 )))
             }

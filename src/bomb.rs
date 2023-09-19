@@ -30,7 +30,7 @@ impl Bomb {
             Some('S') => BombType::Penetrating,
             _ => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "Invalid bomb: {} at {}. It should start with B or S",
+                    "invalid bomb {} at {}. It should start with B or S",
                     square, position
                 )))
             }
@@ -40,7 +40,7 @@ impl Bomb {
             Ok(bomb_distance) => bomb_distance,
             Err(_) => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "Invalid bomb distance: {} at {} it shoudld be positive number",
+                    "invalid bomb distance {} at {} it shoudld be positive number",
                     square, position
                 )))
             }

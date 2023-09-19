@@ -29,7 +29,7 @@ impl Enemy {
             Ok(health) if health > 0 => health,
             _ => {
                 return Err(InvalidSquare(format!(
-                    "Invalid enemy health {} at {}. It should be a positive number",
+                    "invalid enemy health {} at {}. It should be a positive number",
                     square, position
                 )))
             }
@@ -116,7 +116,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "Invalid enemy health F at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F at (0, 0). It should be a positive number".to_string()
             ))
         );
     }
@@ -127,7 +127,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "Invalid enemy health F3A at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F3A at (0, 0). It should be a positive number".to_string()
             ))
         );
     }
@@ -138,7 +138,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "Invalid enemy health F3.5 at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F3.5 at (0, 0). It should be a positive number".to_string()
             ))
         );
     }
@@ -149,7 +149,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "Invalid enemy health F-3 at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F-3 at (0, 0). It should be a positive number".to_string()
             ))
         );
     }
@@ -160,7 +160,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "Invalid enemy health F0 at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F0 at (0, 0). It should be a positive number".to_string()
             ))
         );
     }

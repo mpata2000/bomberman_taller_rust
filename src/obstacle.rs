@@ -29,7 +29,7 @@ impl Obstacle {
             "DR" => ObstacleType::RedirectionRight,
             _ => {
                 return Err(InvalidSquare(format!(
-                    "Invalid obstacle: {} at {}",
+                    "invalid obstacle {} at {}",
                     square, position
                 )))
             }
@@ -183,7 +183,7 @@ mod test {
         assert_eq!(
             result,
             Err(InvalidSquare(
-                "Invalid obstacle: A at x: 0, y: 0".to_string()
+                "invalid obstacle A at (0, 0)".to_string()
             ))
         );
     }
