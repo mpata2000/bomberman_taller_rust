@@ -20,11 +20,8 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), String> {
     let y = args[3].parse::<u32>();
 
     match (x, y) {
-        (Ok(x), Ok(y)) if x >= 0 && y >= 0 => Ok((input_path, output_path, Point::new(x, y))),
-        (Ok(_), Ok(_)) => Err("x and y must be greater equal than 0".to_string()),
-        (Err(_), Ok(_)) => Err("x must be a number".to_string()),
-        (Ok(_), Err(_)) => Err("y must be a number".to_string()),
-        (Err(_), Err(_)) => Err("x and y must be numbers".to_string()),
+        (Ok(x), Ok(y)) => Ok((input_path, output_path, Point::new(x, y))),
+        (_, _) => Err("x and y must be numbers and greater equal to 0".to_string()),
     }
 }
 

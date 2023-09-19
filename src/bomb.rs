@@ -1,4 +1,4 @@
-use crate::bomberman::{CanBeHit, MazeDisplay};
+use crate::bomberman::{BombermanError, CanBeHit, MazeDisplay};
 use crate::obstacle::Obstacle;
 use crate::point::{Direction, Point};
 
@@ -23,20 +23,26 @@ pub(crate) struct Bomb {
 }
 
 impl Bomb {
-    pub(crate) fn new(square: String, position: Point) -> Result<Bomb, String> {
-        if square.len() < 2 {
-            return Err(format!("Invalid bomb: {}", square));
-        }
-
+    pub(crate) fn new(square: String, position: Point) -> Result<Bomb, BombermanError> {
         let bomb_type = match square.chars().next() {
             Some('B') => BombType::Normal,
             Some('S') => BombType::Penetrating,
-            _ => return Err(format!("Invalid bomb: {}", square)),
+            _ => {
+                return Err(BombermanError::InvalidSquare(format!(
+                    "Invalid bomb: {} at {}. It should start with B or S",
+                    square, position
+                )))
+            }
         };
 
         let explotion_distance = match square[1..].parse::<u32>() {
             Ok(bomb_distance) => bomb_distance,
-            Err(_) => return Err(format!("Invalid bomb distance: {}", square)),
+            Err(_) => {
+                return Err(BombermanError::InvalidSquare(format!(
+                    "Invalid bomb distance: {} at {} it shoudld be positive number",
+                    square, position
+                )))
+            }
         };
         Ok(Bomb {
             bomb_type,
@@ -99,7 +105,7 @@ impl CanBeHit for Bomb {
         }
     }
 
-    fn is_in_position(&self, position: Point) -> bool {
+    fn in_position(&self, position: Point) -> bool {
         self.position == position
     }
 }

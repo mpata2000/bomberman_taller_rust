@@ -1,4 +1,5 @@
-use crate::bomberman::MazeDisplay;
+use crate::bomberman::BombermanError::InvalidSquare;
+use crate::bomberman::{BombermanError, MazeDisplay};
 use crate::point::{Direction, Point};
 
 #[derive(Debug, PartialEq)]
@@ -18,7 +19,7 @@ pub(crate) struct Obstacle {
 }
 
 impl Obstacle {
-    pub(crate) fn new(square: String, position: Point) -> Result<Obstacle, String> {
+    pub(crate) fn new(square: String, position: Point) -> Result<Obstacle, BombermanError> {
         let obstacle_type = match square.as_str() {
             "W" => ObstacleType::Wall,
             "R" => ObstacleType::Rock,
@@ -26,7 +27,12 @@ impl Obstacle {
             "DD" => ObstacleType::RedirectionDown,
             "DL" => ObstacleType::RedirectionLeft,
             "DR" => ObstacleType::RedirectionRight,
-            _ => return Err(format!("Invalid obstacle: {}", square)),
+            _ => {
+                return Err(InvalidSquare(format!(
+                    "Invalid obstacle: {} at {}",
+                    square, position
+                )))
+            }
         };
         Ok(Obstacle {
             obstacle_type,
@@ -83,6 +89,7 @@ impl MazeDisplay for Obstacle {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::bomberman::BombermanError::InvalidSquare;
 
     #[test]
     fn test_new_wall() {
@@ -173,7 +180,12 @@ mod test {
         let square = "A".to_string();
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
-        assert_eq!(result, Err("Invalid obstacle: A".to_string()));
+        assert_eq!(
+            result,
+            Err(InvalidSquare(
+                "Invalid obstacle: A at x: 0, y: 0".to_string()
+            ))
+        );
     }
 
     #[test]

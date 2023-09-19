@@ -1,3 +1,6 @@
+use std::fmt;
+use std::fmt::Display;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum Direction {
     Up,
@@ -48,6 +51,12 @@ impl Point {
             Direction::Right => Point::new(self.x + 1, self.y),
         };
         Ok(point)
+    }
+}
+
+impl Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }
 

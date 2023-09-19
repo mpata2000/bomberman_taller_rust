@@ -2,6 +2,7 @@ use crate::bomb::Bomb;
 use crate::enemy::Enemy;
 use crate::obstacle::Obstacle;
 use crate::point::Point;
+use std::fmt::Display;
 
 #[derive(Debug)]
 pub(crate) struct Bomberman {
@@ -11,18 +12,43 @@ pub(crate) struct Bomberman {
     size: u32,
 }
 
+#[derive(Debug, PartialEq)]
+pub(crate) enum BombermanError {
+    MazeNotSquare(String),
+    InvalidSquare(String),
+    EmptySquare(String),
+    NoBombInStartingPosition(String),
+}
+
+impl Display for BombermanError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            BombermanError::MazeNotSquare(e) => write!(f, "MazeNotSquare: {}", e),
+            BombermanError::InvalidSquare(e) => write!(f, "InvalidSquare: {}", e),
+            BombermanError::EmptySquare(e) => write!(f, "EmptySquare: {}", e),
+            BombermanError::NoBombInStartingPosition(e) => {
+                write!(f, "NoBombInStartingPosition: {}", e)
+            }
+        }
+    }
+}
+
 pub(crate) trait CanBeHit {
+    // Hit the object so it changes its state if needed
     fn hit(&mut self);
-    fn is_in_position(&self, position: Point) -> bool;
+    // Return the position of the object
+    fn in_position(&self, position: Point) -> bool;
 }
 
 pub(crate) trait MazeDisplay {
+    // Return the string to display
     fn display(&self) -> String;
+    // Return the position of the object
     fn get_position(&self) -> Point;
 }
 
 impl Bomberman {
-    pub(crate) fn new(file_string: String) -> Result<Bomberman, String> {
+    pub(crate) fn new(file_string: String) -> Result<Bomberman, BombermanError> {
         let lines: Vec<&str> = file_string.split("\n").collect();
         let enemies: Vec<Enemy> = Vec::new();
         let bombs: Vec<Bomb> = Vec::new();
@@ -38,7 +64,11 @@ impl Bomberman {
         for (y, line) in lines.iter().enumerate() {
             let squares: Vec<&str> = line.split(" ").collect();
             if squares.len() != game.size as usize {
-                return Err(format!("Incorrect number of squares in line: {}", line));
+                return Err(BombermanError::MazeNotSquare(format!(
+                    "Maze has {} lines and {} columns",
+                    game.size,
+                    squares.len()
+                )));
             }
             for (x, square) in squares.iter().enumerate() {
                 let point = Point::new(x as u32, y as u32);
@@ -51,10 +81,15 @@ impl Bomberman {
         Ok(game)
     }
 
-    fn add_square(&mut self, square: String, point: Point) -> Result<(), String> {
+    fn add_square(&mut self, square: String, point: Point) -> Result<(), BombermanError> {
         let first_char = match square.chars().next() {
             Some(first_char) => first_char,
-            None => return Err("Empty square string".to_string()),
+            None => {
+                return Err(BombermanError::InvalidSquare(format!(
+                    "Empty square string at {}",
+                    point
+                )))
+            }
         };
         match first_char {
             'F' => {
@@ -79,13 +114,14 @@ impl Bomberman {
                 self.obstacles.push(obstacle);
             }
             '_' => (),
-            _ => return Err(format!("Invalid square: {}", square)),
+            _ => {
+                return Err(BombermanError::InvalidSquare(format!(
+                    "Invalid square: {} at x: {}, y: {}",
+                    square, point.x, point.y
+                )))
+            }
         }
         Ok(())
-    }
-
-    fn there_are_active_bombs(&mut self) -> bool {
-        self.bombs.iter().any(|bomb| bomb.is_active())
     }
 
     // Set game for next turn
@@ -95,26 +131,39 @@ impl Bomberman {
             .iter_mut()
             .for_each(|enemy| enemy.reset_state());
     }
-    
+
     fn get_hittable_in_position(&mut self, position: Point) -> Option<&mut dyn CanBeHit> {
         let mut hittable: Option<&mut dyn CanBeHit> = None;
-        if let Some(enemy) = self.enemies.iter_mut().find(|enemy| enemy.is_in_position(position)) {
+        if let Some(enemy) = self
+            .enemies
+            .iter_mut()
+            .find(|enemy| enemy.in_position(position))
+        {
             hittable = Some(enemy);
         }
-        if let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_in_position(position)) {
+        if let Some(bomb) = self
+            .bombs
+            .iter_mut()
+            .find(|bomb| bomb.in_position(position))
+        {
             hittable = Some(bomb);
         }
         hittable
     }
 
-    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<Vec<Vec<String>>, String> {
+    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<Vec<Vec<String>>, BombermanError> {
         let first_bomb = self
             .bombs
             .iter_mut()
-            .find(|bomb| bomb.is_in_position(start_bomb));
+            .find(|bomb| bomb.in_position(start_bomb));
         match first_bomb {
             Some(bomb) => bomb.hit(),
-            None => return Err("No bomb in starting position x: {}, y: {}".to_string()),
+            None => {
+                return Err(BombermanError::NoBombInStartingPosition(format!(
+                    "No bomb in starting position: {}",
+                    start_bomb
+                )))
+            }
         }
 
         while let Some(bomb) = self.bombs.iter_mut().find(|bomb| bomb.is_active()) {
@@ -143,6 +192,7 @@ impl Bomberman {
         displayable
     }
 
+    // Convert game to matrix
     pub(crate) fn to_matrix(&self) -> Vec<Vec<String>> {
         let mut matrix = vec![vec!["_".to_string(); self.size as usize]; self.size as usize];
         let displayable = self.get_all_displayable();
