@@ -65,23 +65,11 @@ impl Obstacle {
         self.position == position
     }
 
-    pub(crate) fn is_rock(&self) -> bool {
-        self.obstacle_type == ObstacleType::Rock
-    }
-
-    pub(crate) fn is_redirection(&self) -> bool {
-        matches!(
-            self.obstacle_type,
-            ObstacleType::RedirectionUp
-                | ObstacleType::RedirectionDown
-                | ObstacleType::RedirectionLeft
-                | ObstacleType::RedirectionRight
-        )
-    }
-
     pub(crate) fn explosion_can_pass(&self, bomb_type: BombType) -> bool {
         match bomb_type {
-            BombType::Normal => self.obstacle_type != ObstacleType::Wall && self.obstacle_type != ObstacleType::Rock,
+            BombType::Normal => {
+                self.obstacle_type != ObstacleType::Wall && self.obstacle_type != ObstacleType::Rock
+            }
             BombType::Penetrating => self.obstacle_type != ObstacleType::Wall,
         }
     }

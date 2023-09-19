@@ -57,6 +57,7 @@ impl Bomb {
         self.bomb_state == BombState::Activated
     }
 
+    // Explode the bomb and return the list of points affected by the explosion
     pub(crate) fn explode(&mut self, maze_size: u32, obstacles: &[Obstacle]) -> Vec<Point> {
         self.bomb_state = BombState::Exploded;
         let mut explosion_points = HashSet::from([self.position]);

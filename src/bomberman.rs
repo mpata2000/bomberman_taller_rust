@@ -141,11 +141,11 @@ impl Bomberman {
     // Plays the game with the given starting bomb
     // Returns the string of the maze after the game or an error
     pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String, BombermanError> {
-        let first_bomb = self
+        match self
             .bombs
             .iter_mut()
-            .find(|bomb| bomb.in_position(start_bomb));
-        match first_bomb {
+            .find(|bomb| bomb.in_position(start_bomb))
+        {
             Some(bomb) => bomb.hit(),
             None => {
                 return Err(BombermanError::NoBombInStartingPosition(format!(
