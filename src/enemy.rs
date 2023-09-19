@@ -26,10 +26,10 @@ impl Enemy {
         }
 
         let health = match square[1..].parse::<u32>() {
-            Ok(health) if health > 0 => health,
+            Ok(health) if health > 0 && health < 4 => health,
             _ => {
                 return Err(InvalidSquare(format!(
-                    "invalid enemy health {} at {}. It should be a positive number",
+                    "invalid enemy health {} at {}. It should be a positive number between 1 and 3 included",
                     square, position
                 )))
             }
@@ -116,7 +116,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "invalid enemy health F at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
     }
@@ -127,7 +127,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "invalid enemy health F3A at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F3A at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
     }
@@ -138,7 +138,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "invalid enemy health F3.5 at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F3.5 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
     }
@@ -149,7 +149,7 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "invalid enemy health F-3 at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F-3 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
     }
@@ -160,7 +160,18 @@ mod test {
         assert_eq!(
             enemy,
             Err(InvalidSquare(
-                "invalid enemy health F0 at (0, 0). It should be a positive number".to_string()
+                "invalid enemy health F0 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
+            ))
+        );
+    }
+
+    #[test]
+    fn test_new_enemy_invalid_health_too_high() {
+        let enemy = Enemy::new("F4".to_string(), Point::new(0, 0));
+        assert_eq!(
+            enemy,
+            Err(InvalidSquare(
+                "invalid enemy health F4 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
     }

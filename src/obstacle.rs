@@ -89,7 +89,6 @@ impl MazeDisplay for Obstacle {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::bomberman::BombermanError::InvalidSquare;
 
     #[test]
     fn test_new_wall() {
