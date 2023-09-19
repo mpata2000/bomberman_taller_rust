@@ -4,7 +4,7 @@ use crate::point::{Direction, Point};
 use std::collections::HashSet;
 
 #[derive(Debug, PartialEq)]
-enum BombType {
+pub enum BombType {
     Normal,
     Penetrating,
 }

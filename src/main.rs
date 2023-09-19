@@ -43,7 +43,7 @@ fn write_out_file(path: String, file_name: String, contents: String) {
         }
     }
     
-    let full_path = format!("{}/{}", path, file_name);
+    let full_path = format!("{}{}", path, file_name);
     match std::fs::write(full_path, contents) {
         Ok(_) => (),
         Err(e) => println!("Error writing file: {}", e),
@@ -53,7 +53,7 @@ fn write_out_file(path: String, file_name: String, contents: String) {
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let (input_file, output_path, start_point) = match validate_args(args) {
-        Ok((input_path, output_path, point)) => (input_path, output_path, point),
+        Ok((input_file, output_path, point)) => (input_file, output_path, point),
         Err(e) => {
             println!("{}", e);
             return;
@@ -79,5 +79,5 @@ fn main() {
         Err(e) => e.to_string(),
     };
 
-    write_out_file(output_path,input_file, result);
+    write_out_file(format!("./{}",output_path),input_file, result);
 }
