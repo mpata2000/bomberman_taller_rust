@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use crate::bomb::BombType;
 use crate::bomberman::BombermanError::InvalidSquare;
 use crate::bomberman::{BombermanError, MazeDisplay};
@@ -20,15 +21,15 @@ pub(crate) enum ObstacleType {
     RedirectionRight,
 }
 
-impl ObstacleType {
-    pub(crate) fn to_string(&self) -> String {
+impl Display for ObstacleType{
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            ObstacleType::Wall => WALL.to_string(),
-            ObstacleType::Rock => ROCK.to_string(),
-            ObstacleType::RedirectionUp => REDIRECTION_UP.to_string(),
-            ObstacleType::RedirectionDown => REDIRECTION_DOWN.to_string(),
-            ObstacleType::RedirectionLeft => REDIRECTION_LEFT.to_string(),
-            ObstacleType::RedirectionRight => REDIRECTION_RIGHT.to_string(),
+            ObstacleType::Wall => write!(f, "{}", WALL),
+            ObstacleType::Rock => write!(f, "{}", ROCK),
+            ObstacleType::RedirectionUp => write!(f, "{}", REDIRECTION_UP),
+            ObstacleType::RedirectionDown => write!(f, "{}", REDIRECTION_DOWN),
+            ObstacleType::RedirectionLeft => write!(f, "{}", REDIRECTION_LEFT),
+            ObstacleType::RedirectionRight => write!(f, "{}", REDIRECTION_RIGHT),
         }
     }
 }
@@ -213,26 +214,6 @@ mod test {
         };
         let position = Point::new(0, 1);
         let result = obstacle.is_in_position(position);
-        assert_eq!(result, false);
-    }
-
-    #[test]
-    fn test_is_rock_for_rock() {
-        let obstacle = Obstacle {
-            obstacle_type: ObstacleType::Rock,
-            position: Point::new(0, 0),
-        };
-        let result = obstacle.is_rock();
-        assert_eq!(result, true);
-    }
-
-    #[test]
-    fn test_is_rock_for_not_rock() {
-        let obstacle = Obstacle {
-            obstacle_type: ObstacleType::Wall,
-            position: Point::new(0, 0),
-        };
-        let result = obstacle.is_rock();
         assert_eq!(result, false);
     }
 

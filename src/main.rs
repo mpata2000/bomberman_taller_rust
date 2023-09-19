@@ -5,6 +5,7 @@ mod obstacle;
 mod point;
 
 use crate::point::Point;
+use std::fmt::format;
 
 pub enum InputError {
     InvalidInput(String),
@@ -20,8 +21,15 @@ impl std::fmt::Display for InputError {
     }
 }
 
+fn format_out_path(path: String) -> String {
+    let mut path = path.trim_end_matches('/');
+    path = path.trim_start_matches('/');
+    format!("./{}/", path)
+}
+
 // Validate the arguments provided to the program
-// Return the input file path, output file path and starting point
+// Creates the output directory if it doesn't exist
+// Return the input file path, output file path and starting point with correct format
 fn validate_args(args: Vec<String>) -> Result<(String, String, Point), InputError> {
     if args.len() != 4 {
         return Err(InputError::InvalidInput(format!(
@@ -29,20 +37,40 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), InputErro
             args.len()
         )));
     }
+    let dir = format_out_path(args[1].clone());
+    match create_dir(dir.clone()) {
+        Ok(_) => (),
+        Err(e) => return Err(e),
+    }
     let input_path = format!("./{}", args[0]);
     let output_path = format!(
-        "./{}{}",
-        args[1],
+        "{}{}",
+        dir,
         args[0].split('/').last().unwrap_or(args[0].as_str())
-    ); // With ./ it seems to work if path does or does not start with /
+    );
+
     let x = args[2].parse::<u32>();
     let y = args[3].parse::<u32>();
 
     match (x, y) {
         (Ok(x), Ok(y)) => Ok((input_path, output_path, Point::new(x, y))),
-        (_, _) => Err(InputError::InvalidInput(
+        _ => Err(InputError::InvalidInput(
             "invalid starting point, x and y should be positive numbers".to_string(),
         )),
+    }
+}
+
+fn create_dir(path: String) -> Result<(), InputError> {
+    if std::path::Path::new(&path).exists() {
+        return Ok(());
+    }
+
+    match std::fs::create_dir_all(path.clone()) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(InputError::FileError(format!(
+            "error creating directory {}, context {}",
+            path, e
+        ))),
     }
 }
 
@@ -57,19 +85,9 @@ fn read_file(path: String) -> Result<String, InputError> {
 }
 
 fn write_out_file(path: String, contents: String) {
-    if !std::path::Path::new(&path).exists() {
-        match std::fs::create_dir_all(&path) {
-            Ok(_) => (),
-            Err(e) => {
-                println!("Error creating directory {}: {}", path, e);
-                return;
-            }
-        }
-    }
-
-    match std::fs::write(path, contents) {
+    match std::fs::write(path.clone(), contents) {
         Ok(_) => (),
-        Err(e) => println!("Error writing file: {}", e),
+        Err(e) => println!("Error writing file {}: {}", path, e),
     }
 }
 
