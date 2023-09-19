@@ -5,7 +5,6 @@ mod obstacle;
 mod point;
 
 use crate::point::Point;
-use std::fmt::format;
 
 pub enum InputError {
     InvalidInput(String),
@@ -21,6 +20,8 @@ impl std::fmt::Display for InputError {
     }
 }
 
+// Format the output path to remove leading and trailing slashes if they exist
+// Return the formatted path like ./{path}/
 fn format_out_path(path: String) -> String {
     let mut path = path.trim_end_matches('/');
     path = path.trim_start_matches('/');
@@ -60,6 +61,7 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), InputErro
     }
 }
 
+// Create a directory if it doesn't exist
 fn create_dir(path: String) -> Result<(), InputError> {
     if std::path::Path::new(&path).exists() {
         return Ok(());
@@ -74,6 +76,7 @@ fn create_dir(path: String) -> Result<(), InputError> {
     }
 }
 
+// Read file contents to string
 fn read_file(path: String) -> Result<String, InputError> {
     match std::fs::read_to_string(path.clone()) {
         Ok(contents) => Ok(contents),
@@ -84,6 +87,7 @@ fn read_file(path: String) -> Result<String, InputError> {
     }
 }
 
+// Write string contents to file
 fn write_out_file(path: String, contents: String) {
     match std::fs::write(path.clone(), contents) {
         Ok(_) => (),
