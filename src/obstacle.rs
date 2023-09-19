@@ -41,6 +41,16 @@ impl Obstacle {
         self.obstacle_type == ObstacleType::Rock
     }
 
+    pub(crate) fn is_redirection(&self) -> bool {
+        match self.obstacle_type {
+            ObstacleType::RedirectionUp => true,
+            ObstacleType::RedirectionDown => true,
+            ObstacleType::RedirectionLeft => true,
+            ObstacleType::RedirectionRight => true,
+            _ => false,
+        }
+    }
+
     pub(crate) fn next_direction(&self, direction: Direction) -> Direction {
         match self.obstacle_type {
             ObstacleType::RedirectionUp => Direction::Up,

@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug",
             "program": "${workspaceRoot}/target/debug/ej_individual",
-            "args": ["./input.txt","/path/to/output_dir/","0","0"],
+            "args": ["./input.txt","/path/to/output_dir/","0","4"],
             "cwd": "${workspaceRoot}",
             "sourceLanguages": ["rust"]
         }

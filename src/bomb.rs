@@ -59,8 +59,8 @@ impl Bomb {
 
     fn bomb_can_pass(&mut self, obstacle: &Obstacle) -> bool {
         match self.bomb_type {
-            BombType::Normal => false,
-            BombType::Penetrating => obstacle.is_rock(),
+            BombType::Normal => obstacle.is_redirection(),
+            BombType::Penetrating => obstacle.is_redirection() || obstacle.is_rock(),
         }
     }
 
@@ -72,7 +72,7 @@ impl Bomb {
             let mut move_dir = dir;
             let mut affected_point = self.position;
             for _ in 0..self.explotion_distance {
-                affected_point = match affected_point.next_point(dir) {
+                affected_point = match affected_point.next_point(move_dir) {
                     Ok(x) => x,
                     Err(_) => break,
                 };
