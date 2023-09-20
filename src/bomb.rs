@@ -131,8 +131,8 @@ impl MazeDisplay for Bomb {
 
 #[cfg(test)]
 mod test {
-    use crate::obstacle;
     use super::*;
+    use crate::obstacle;
 
     #[test]
     fn test_new_normal_bomb() {
@@ -247,7 +247,7 @@ mod test {
     }
 
     #[test]
-    fn test_bomb_explosion_does_not_leave_board(){
+    fn test_bomb_explosion_does_not_leave_board() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
@@ -256,7 +256,13 @@ mod test {
         };
         let obstacles = vec![];
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(1, 0), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(1, 0),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+        ];
 
         result.sort();
         explosion_points.sort();
@@ -264,7 +270,7 @@ mod test {
     }
 
     #[test]
-    fn test_normal_bomb_can_not_penetrate_rock(){
+    fn test_normal_bomb_can_not_penetrate_rock() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
@@ -273,7 +279,12 @@ mod test {
         };
         let obstacles = vec![Obstacle::new("R".to_string(), Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+        ];
 
         result.sort();
         explosion_points.sort();
@@ -281,7 +292,7 @@ mod test {
     }
 
     #[test]
-    fn test_penetration_bomb_can_pass_rock(){
+    fn test_penetration_bomb_can_pass_rock() {
         let mut bomb = Bomb {
             bomb_type: BombType::Penetrating,
             bomb_state: BombState::Idle,
@@ -290,7 +301,13 @@ mod test {
         };
         let obstacles = vec![];
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(1, 0), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(1, 0),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+        ];
 
         result.sort();
         explosion_points.sort();
@@ -298,7 +315,7 @@ mod test {
     }
 
     #[test]
-    fn test_normal_bomb_can_not_penetrate_wall(){
+    fn test_normal_bomb_can_not_penetrate_wall() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
@@ -307,7 +324,12 @@ mod test {
         };
         let obstacles = vec![Obstacle::new("W".to_string(), Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+        ];
 
         result.sort();
         explosion_points.sort();
@@ -315,7 +337,7 @@ mod test {
     }
 
     #[test]
-    fn test_penetration_bomb_can_not_penetrate_wall(){
+    fn test_penetration_bomb_can_not_penetrate_wall() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
@@ -324,7 +346,12 @@ mod test {
         };
         let obstacles = vec![Obstacle::new("W".to_string(), Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+        ];
 
         result.sort();
         explosion_points.sort();
@@ -332,16 +359,24 @@ mod test {
     }
 
     #[test]
-    fn test_bomb_explosion_can_be_redirected(){
+    fn test_bomb_explosion_can_be_redirected() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
             position: Point::new(1, 1),
             explosion_distance: 4,
         };
-        let obstacles = vec![Obstacle::new(obstacle::REDIRECTION_LEFT.to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles =
+            vec![Obstacle::new(obstacle::REDIRECTION_LEFT.to_string(), Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(1, 0), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2),Point::new(0, 0)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(1, 0),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+            Point::new(0, 0),
+        ];
 
         result.sort();
         explosion_points.sort();
@@ -349,17 +384,24 @@ mod test {
     }
 
     #[test]
-    fn test_bomb_explosion_affected_points_are_not_repeated_with_redirection(){
+    fn test_bomb_explosion_affected_points_are_not_repeated_with_redirection() {
         let mut bomb = Bomb {
             bomb_type: BombType::Normal,
             bomb_state: BombState::Idle,
             position: Point::new(1, 1),
             explosion_distance: 5,
         };
-        let obstacles = vec![Obstacle::new(obstacle::REDIRECTION_DOWN.to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles =
+            vec![Obstacle::new(obstacle::REDIRECTION_DOWN.to_string(), Point::new(1, 0)).unwrap()];
         // The explotion up goes (1,0) -> Redirection -> (1,1) -> (1,2) -> (1,2)
         let mut explosion_points = bomb.explode(3, &obstacles);
-        let mut result = vec![Point::new(1, 1), Point::new(1, 0), Point::new(0, 1), Point::new(2, 1), Point::new(1, 2)];
+        let mut result = vec![
+            Point::new(1, 1),
+            Point::new(1, 0),
+            Point::new(0, 1),
+            Point::new(2, 1),
+            Point::new(1, 2),
+        ];
 
         result.sort();
         explosion_points.sort();

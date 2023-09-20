@@ -35,10 +35,10 @@ impl Point {
 
     pub(crate) fn next_point(self, direction: Direction, limit: u32) -> Result<Point, String> {
         let point = match direction {
-            Direction::Down if self.y < limit-1 => Point::new(self.x, self.y + 1),
+            Direction::Down if self.y < limit - 1 => Point::new(self.x, self.y + 1),
             Direction::Up if self.y > 0 => Point::new(self.x, self.y - 1),
             Direction::Left if self.x > 0 => Point::new(self.x - 1, self.y),
-            Direction::Right if self.x < limit-1 => Point::new(self.x + 1, self.y),
+            Direction::Right if self.x < limit - 1 => Point::new(self.x + 1, self.y),
             _ => {
                 return Err(format!(
                     "Cannot move {:?} from the {} of the board, it goes out of bounds",

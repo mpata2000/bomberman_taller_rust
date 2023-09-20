@@ -1,12 +1,12 @@
-use std::fmt::Display;
 use crate::bomb::BombType;
 use crate::bomberman::BombermanError::InvalidSquare;
 use crate::bomberman::{BombermanError, MazeDisplay};
 use crate::point::{Direction, Point};
+use std::fmt::Display;
 
 pub const WALL: &str = "W";
 pub const ROCK: &str = "R";
-pub const  REDIRECTION: &str = "D";
+pub const REDIRECTION: &str = "D";
 pub const REDIRECTION_UP: &str = "DU";
 pub const REDIRECTION_DOWN: &str = "DD";
 pub const REDIRECTION_LEFT: &str = "DL";
@@ -27,7 +27,7 @@ pub(crate) enum ObstacleType {
     RedirectionRight,
 }
 
-impl Display for ObstacleType{
+impl Display for ObstacleType {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             ObstacleType::Wall => write!(f, "{}", WALL),
@@ -47,7 +47,6 @@ pub(crate) struct Obstacle {
 }
 
 impl Obstacle {
-
     // Create a new obstacle from a square and a position
     // The square should be one of the following:
     // W: wall

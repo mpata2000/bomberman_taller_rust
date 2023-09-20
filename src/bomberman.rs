@@ -2,8 +2,8 @@ use crate::bomb::Bomb;
 use crate::enemy::Enemy;
 use crate::obstacle::Obstacle;
 use crate::point::Point;
-use std::fmt::Display;
 use crate::{bomb, enemy, obstacle};
+use std::fmt::Display;
 
 #[derive(Debug)]
 pub(crate) struct Bomberman {
@@ -208,7 +208,7 @@ impl Display for Bomberman {
 }
 
 #[cfg(test)]
-mod test{
+mod test {
     use super::*;
 
     // Next 3 integration test come from https://taller-1-fiuba-rust.github.io/proyecto/23C2/ejercicio_individual.html
@@ -222,7 +222,7 @@ mod test{
     }
 
     #[test]
-    fn integration_test_example_2(){
+    fn integration_test_example_2() {
         let input = "_ _ B2 _ B1 _ _\n_ W _ W _ W _\n_ _ B2 R F1 _ _\n_ W _ W R W _\n_ _ B4 _ _ _ _\n_ W _ W _ W _\n_ _ _ _ _ _ B1\n".to_string();
         let result = "_ _ _ _ _ _ _\n_ W _ W _ W _\n_ _ _ R F1 _ _\n_ W _ W R W _\n_ _ _ _ _ _ _\n_ W _ W _ W _\n_ _ _ _ _ _ B1\n".to_string();
         let mut game = Bomberman::new(input).unwrap();
@@ -231,11 +231,57 @@ mod test{
     }
 
     #[test]
-    fn integration_test_example_3(){
+    fn integration_test_example_3() {
         let input = "_ _ _ _ _ _ _\n_ W _ W _ W _\nS4 R R R F2 _ _\n_ W _ W _ W _\nB2 _ B5 _ DU _ _\n_ W _ W _ W _\n_ _ _ _ _ _ _\n".to_string();
         let result = "_ _ _ _ _ _ _\n_ W _ W _ W _\n_ R R R _ _ _\n_ W _ W _ W _\n_ _ _ _ DU _ _\n_ W _ W _ W _\n_ _ _ _ _ _ _\n".to_string();
         let mut game = Bomberman::new(input).unwrap();
         let board = game.play(Point::new(2, 4)).unwrap();
         assert_eq!(result, board);
+    }
+
+    #[test]
+    fn test_enemy_is_hit_with_redirection() {
+        let input = "_ F2 DL\n_ _ _\n_ _ B8\n".to_string();
+        let result = "_ F1 DL\n_ _ _\n_ _ _\n".to_string();
+        let mut game = Bomberman::new(input).unwrap();
+        let board = game.play(Point::new(2, 2)).unwrap();
+        assert_eq!(result, board);
+    }
+
+    #[test]
+    fn test_enemy_is_not_hit_twice_by_same_bomb() {
+        let input = "B5 F2 DL\n _ _ _\n_ _ _\n".to_string();
+        let result = "_ F1 DL\n_ _ _\n_ _ _\n".to_string();
+        let mut game = Bomberman::new(input).unwrap();
+        let board = game.play(Point::new(0, 0)).unwrap();
+        assert_eq!(result, board);
+    }
+
+    #[test]
+    fn test_bomb_explodes_other_bomb() {
+        let input = "B5 B2\n_ _\n".to_string();
+        let result = "_ _\n_ _\n".to_string();
+        let mut game = Bomberman::new(input).unwrap();
+        let board = game.play(Point::new(0, 0)).unwrap();
+        assert_eq!(result, board);
+    }
+
+    #[test]
+    fn board_not_square_returns_error() {
+        let input = "B5 B2\n_ _ _\n".to_string();
+        let result = BombermanError::MazeNotSquare(
+            "Maze has 2 lines and 3 columns, it should be equal".to_string(),
+        );
+        let game = Bomberman::new(input);
+        assert_eq!(result, game.unwrap_err());
+    }
+
+    #[test]
+    fn invalid_square_returns_error() {
+        let input = "X B2\n_ _ \n".to_string();
+        let result =
+            BombermanError::InvalidSquare("The square X at position (0, 0) is invalid".to_string());
+        let game = Bomberman::new(input);
+        assert_eq!(result, game.unwrap_err());
     }
 }
