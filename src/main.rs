@@ -43,7 +43,7 @@ fn validate_args(args: Vec<String>) -> Result<(String, String, Point), InputErro
         Ok(_) => (),
         Err(e) => return Err(e),
     }
-    let input_path = format!("./{}", args[0]);
+    let input_path = format!("./{}", args[0].trim_start_matches('/'));
     let output_path = format!(
         "{}{}",
         dir,
