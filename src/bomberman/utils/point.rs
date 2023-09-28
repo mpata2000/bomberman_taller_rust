@@ -1,27 +1,7 @@
+use crate::bomberman::utils::direction::Direction;
 use std::fmt;
 use std::fmt::Display;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub(crate) enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
-
-impl Direction {
-    // Source: https://stackoverflow.com/questions/21371534/in-rust-is-there-a-way-to-iterate-through-the-values-of-an-enum
-    pub(crate) fn iter() -> impl Iterator<Item = Direction> {
-        [
-            Direction::Up,
-            Direction::Down,
-            Direction::Left,
-            Direction::Right,
-        ]
-        .iter()
-        .copied()
-    }
-}
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, PartialOrd, Ord)]
 pub struct Point {
     pub(crate) x: u32,

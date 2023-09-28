@@ -1,23 +1,13 @@
-use crate::bomberman::{BombermanError, CanBeHit, MazeDisplay};
-use crate::obstacle::Obstacle;
-use crate::point::{Direction, Point};
+use crate::bomberman::bomberman_errors::BombermanError;
+use crate::bomberman::maze_placeable::bomb_state::BombState;
+use crate::bomberman::maze_placeable::bomb_type::BombType;
+use crate::bomberman::maze_placeable::obstacle::Obstacle;
+use crate::bomberman::utils::can_be_hit::CanBeHit;
+use crate::bomberman::utils::direction::Direction;
+use crate::bomberman::utils::maze_display::MazeDisplay;
+use crate::bomberman::utils::point::Point;
 use std::collections::HashSet;
 
-pub const NORMAL_BOMB: &str = "B";
-pub const PENETRATING_BOMB: &str = "S";
-
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum BombType {
-    Normal,
-    Penetrating,
-}
-
-#[derive(Debug, PartialEq)]
-enum BombState {
-    Idle,
-    Exploded,
-    Activated,
-}
 #[derive(Debug, PartialEq)]
 pub(crate) struct Bomb {
     bomb_type: BombType,
@@ -31,10 +21,9 @@ impl Bomb {
     // The square should start with B or S and be followed by a number greater than 0
     // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Bomb, BombermanError> {
-        let bomb_type = match square.get(..1) {
-            Some(NORMAL_BOMB) => BombType::Normal,
-            Some(PENETRATING_BOMB) => BombType::Penetrating,
-            _ => {
+        let bomb_type = match BombType::new(&square) {
+            Ok(bomb_type) => bomb_type,
+            Err(_) => {
                 return Err(BombermanError::InvalidSquare(format!(
                     "invalid bomb {} at {}. It should start with B or S",
                     square, position
@@ -132,7 +121,7 @@ impl MazeDisplay for Bomb {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::obstacle;
+    use crate::bomberman::maze_placeable::obstacle_type;
 
     #[test]
     fn test_new_normal_bomb() {
@@ -366,8 +355,11 @@ mod test {
             position: Point::new(1, 1),
             explosion_distance: 4,
         };
-        let obstacles =
-            vec![Obstacle::new(obstacle::REDIRECTION_LEFT.to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles = vec![Obstacle::new(
+            obstacle_type::REDIRECTION_LEFT.to_string(),
+            Point::new(1, 0),
+        )
+        .unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
         let mut result = vec![
             Point::new(1, 1),
@@ -391,8 +383,11 @@ mod test {
             position: Point::new(1, 1),
             explosion_distance: 5,
         };
-        let obstacles =
-            vec![Obstacle::new(obstacle::REDIRECTION_DOWN.to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles = vec![Obstacle::new(
+            obstacle_type::REDIRECTION_DOWN.to_string(),
+            Point::new(1, 0),
+        )
+        .unwrap()];
         // The explotion up goes (1,0) -> Redirection -> (1,1) -> (1,2) -> (1,2)
         let mut explosion_points = bomb.explode(3, &obstacles);
         let mut result = vec![

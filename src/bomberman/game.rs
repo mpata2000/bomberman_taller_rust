@@ -1,8 +1,12 @@
-use crate::bomb::Bomb;
-use crate::enemy::Enemy;
-use crate::obstacle::Obstacle;
-use crate::point::Point;
-use crate::{bomb, enemy, obstacle};
+use crate::bomberman::bomberman_errors::BombermanError;
+use crate::bomberman::maze_placeable::bomb::Bomb;
+use crate::bomberman::maze_placeable::enemy::Enemy;
+use crate::bomberman::maze_placeable::obstacle::Obstacle;
+use crate::bomberman::maze_placeable::obstacle_type::ObstacleType;
+use crate::bomberman::maze_placeable::{bomb_type, enemy};
+use crate::bomberman::utils::can_be_hit::CanBeHit;
+use crate::bomberman::utils::maze_display::MazeDisplay;
+use crate::bomberman::utils::point::Point;
 use std::fmt::Display;
 
 #[derive(Debug)]
@@ -12,40 +16,6 @@ pub(crate) struct Bomberman {
     obstacles: Vec<Obstacle>,
     size: u32,
 }
-
-#[derive(Debug, PartialEq)]
-pub(crate) enum BombermanError {
-    MazeNotSquare(String),
-    InvalidSquare(String),
-    NoBombInStartingPosition(String),
-}
-
-impl Display for BombermanError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            BombermanError::MazeNotSquare(e) => write!(f, "MazeNotSquare: {}", e),
-            BombermanError::InvalidSquare(e) => write!(f, "InvalidSquare: {}", e),
-            BombermanError::NoBombInStartingPosition(e) => {
-                write!(f, "NoBombInStartingPosition: {}", e)
-            }
-        }
-    }
-}
-
-pub(crate) trait CanBeHit {
-    // Hit the object so it changes its state if needed
-    fn hit(&mut self);
-    // Return the position of the object
-    fn in_position(&self, position: Point) -> bool;
-}
-
-pub(crate) trait MazeDisplay {
-    // Return the string to display
-    fn display(&self) -> String;
-    // Return the position of the object
-    fn get_position(&self) -> Point;
-}
-
 impl Bomberman {
     // Create a new game from a string
     // The string should be a square matrix of squares separated by spaces
@@ -88,14 +58,14 @@ impl Bomberman {
                 };
                 self.enemies.push(enemy);
             }
-            Some(bomb::NORMAL_BOMB) | Some(bomb::PENETRATING_BOMB) => {
+            Some(bomb_type::NORMAL_BOMB) | Some(bomb_type::PENETRATING_BOMB) => {
                 let bomb = match Bomb::new(square, point) {
                     Ok(bomb) => bomb,
                     Err(e) => return Some(e),
                 };
                 self.bombs.push(bomb);
             }
-            Some(x) if obstacle::is_obstacle(x) => {
+            Some(x) if ObstacleType::is_obstacle(x) => {
                 let obstacle = match Obstacle::new(square, point) {
                     Ok(obstacle) => obstacle,
                     Err(e) => return Some(e),

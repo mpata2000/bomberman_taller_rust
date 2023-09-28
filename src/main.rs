@@ -1,24 +1,9 @@
-mod bomb;
 mod bomberman;
-mod enemy;
-mod obstacle;
-mod point;
+mod input_errors;
 
-use crate::point::Point;
-
-pub enum InputError {
-    InvalidInput(String),
-    FileError(String),
-}
-
-impl std::fmt::Display for InputError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            InputError::InvalidInput(e) => write!(f, "InvalidInput: {}", e),
-            InputError::FileError(e) => write!(f, "FileError: {}", e),
-        }
-    }
-}
+use crate::bomberman::game::Bomberman;
+use crate::bomberman::utils::point::Point;
+use crate::input_errors::InputError;
 
 // Format the output path to remove leading and trailing slashes if they exist
 // Return the formatted path like ./{path}/
@@ -111,7 +96,7 @@ fn main() {
             return;
         }
     };
-    let mut game = match bomberman::Bomberman::new(contents) {
+    let mut game = match Bomberman::new(contents) {
         Ok(game) => game,
         Err(e) => {
             write_out_file(output_path, e.to_string());

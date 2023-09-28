@@ -1,44 +1,9 @@
-use crate::bomb::BombType;
-use crate::bomberman::BombermanError::InvalidSquare;
-use crate::bomberman::{BombermanError, MazeDisplay};
-use crate::point::{Direction, Point};
-use std::fmt::Display;
-
-pub const WALL: &str = "W";
-pub const ROCK: &str = "R";
-pub const REDIRECTION: &str = "D";
-pub const REDIRECTION_UP: &str = "DU";
-pub const REDIRECTION_DOWN: &str = "DD";
-pub const REDIRECTION_LEFT: &str = "DL";
-pub const REDIRECTION_RIGHT: &str = "DR";
-
-// Return true if the square is an obstacle
-pub fn is_obstacle(square: &str) -> bool {
-    square == WALL || square == ROCK || square.starts_with(REDIRECTION)
-}
-
-#[derive(Debug, PartialEq)]
-pub(crate) enum ObstacleType {
-    Wall,
-    Rock,
-    RedirectionUp,
-    RedirectionDown,
-    RedirectionLeft,
-    RedirectionRight,
-}
-
-impl Display for ObstacleType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            ObstacleType::Wall => write!(f, "{}", WALL),
-            ObstacleType::Rock => write!(f, "{}", ROCK),
-            ObstacleType::RedirectionUp => write!(f, "{}", REDIRECTION_UP),
-            ObstacleType::RedirectionDown => write!(f, "{}", REDIRECTION_DOWN),
-            ObstacleType::RedirectionLeft => write!(f, "{}", REDIRECTION_LEFT),
-            ObstacleType::RedirectionRight => write!(f, "{}", REDIRECTION_RIGHT),
-        }
-    }
-}
+use crate::bomberman::bomberman_errors::BombermanError;
+use crate::bomberman::maze_placeable::bomb_type::BombType;
+use crate::bomberman::maze_placeable::obstacle_type::ObstacleType;
+use crate::bomberman::utils::direction::Direction;
+use crate::bomberman::utils::maze_display::MazeDisplay;
+use crate::bomberman::utils::point::Point;
 
 #[derive(Debug, PartialEq)]
 pub(crate) struct Obstacle {
@@ -57,24 +22,16 @@ impl Obstacle {
     // DR: redirection right
     // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Obstacle, BombermanError> {
-        let obstacle_type = match square.as_str() {
-            WALL => ObstacleType::Wall,
-            ROCK => ObstacleType::Rock,
-            REDIRECTION_UP => ObstacleType::RedirectionUp,
-            REDIRECTION_DOWN => ObstacleType::RedirectionDown,
-            REDIRECTION_LEFT => ObstacleType::RedirectionLeft,
-            REDIRECTION_RIGHT => ObstacleType::RedirectionRight,
-            _ => {
-                return Err(InvalidSquare(format!(
-                    "invalid obstacle {} at {}",
-                    square, position
-                )))
-            }
-        };
-        Ok(Obstacle {
-            obstacle_type,
-            position,
-        })
+        match ObstacleType::new(&square) {
+            Ok(obstacle_type) => Ok(Obstacle {
+                obstacle_type,
+                position,
+            }),
+            Err(_) => Err(BombermanError::InvalidSquare(format!(
+                "invalid obstacle {} at {}",
+                square, position
+            ))),
+        }
     }
 
     // Return true if the obstacle is in the position
@@ -118,6 +75,7 @@ impl MazeDisplay for Obstacle {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::bomberman::bomberman_errors::BombermanError::InvalidSquare;
 
     #[test]
     fn test_new_wall() {

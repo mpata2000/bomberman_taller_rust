@@ -1,15 +1,10 @@
-use crate::bomberman::BombermanError::InvalidSquare;
-use crate::bomberman::{BombermanError, CanBeHit, MazeDisplay};
-use crate::point::Point;
+use crate::bomberman::bomberman_errors::BombermanError;
+use crate::bomberman::maze_placeable::enemy_state::EnemyState;
+use crate::bomberman::utils::can_be_hit::CanBeHit;
+use crate::bomberman::utils::maze_display::MazeDisplay;
+use crate::bomberman::utils::point::Point;
 
 pub const ENEMY: &str = "F";
-
-#[derive(Debug, PartialEq)]
-enum EnemyState {
-    Hit,
-    Dead,
-    Idle,
-}
 
 #[derive(Debug, PartialEq)]
 pub struct Enemy {
@@ -24,7 +19,7 @@ impl Enemy {
     // Return an error if the square is invalid
     pub(crate) fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
         if !square.starts_with(ENEMY) {
-            return Err(InvalidSquare(format!(
+            return Err(BombermanError::InvalidSquare(format!(
                 "invalid enemy {} at {}",
                 square, position
             )));
@@ -33,7 +28,7 @@ impl Enemy {
         let health = match square[1..].parse::<u32>() {
             Ok(health) if health > 0 && health < 4 => health,
             _ => {
-                return Err(InvalidSquare(format!(
+                return Err(BombermanError::InvalidSquare(format!(
                     "invalid enemy health {} at {}. It should be a positive number between 1 and 3 included",
                     square, position
                 )))
@@ -116,7 +111,9 @@ mod test {
         let enemy = Enemy::new("A3".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare("invalid enemy A3 at (0, 0)".to_string()))
+            Err(BombermanError::InvalidSquare(
+                "invalid enemy A3 at (0, 0)".to_string()
+            ))
         );
     }
 
@@ -125,7 +122,7 @@ mod test {
         let enemy = Enemy::new("F".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare(
+            Err(BombermanError::InvalidSquare(
                 "invalid enemy health F at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
@@ -136,7 +133,7 @@ mod test {
         let enemy = Enemy::new("F3A".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare(
+            Err(BombermanError::InvalidSquare(
                 "invalid enemy health F3A at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
@@ -147,7 +144,7 @@ mod test {
         let enemy = Enemy::new("F3.5".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare(
+            Err(BombermanError::InvalidSquare(
                 "invalid enemy health F3.5 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
@@ -158,7 +155,7 @@ mod test {
         let enemy = Enemy::new("F-3".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare(
+            Err(BombermanError::InvalidSquare(
                 "invalid enemy health F-3 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
@@ -169,7 +166,7 @@ mod test {
         let enemy = Enemy::new("F0".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare(
+            Err(BombermanError::InvalidSquare(
                 "invalid enemy health F0 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
@@ -180,7 +177,7 @@ mod test {
         let enemy = Enemy::new("F4".to_string(), Point::new(0, 0));
         assert_eq!(
             enemy,
-            Err(InvalidSquare(
+            Err(BombermanError::InvalidSquare(
                 "invalid enemy health F4 at (0, 0). It should be a positive number between 1 and 3 included".to_string()
             ))
         );
