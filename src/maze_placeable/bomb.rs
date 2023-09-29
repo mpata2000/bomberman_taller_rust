@@ -120,8 +120,8 @@ impl MazeDisplay for Bomb {
 
 #[cfg(test)]
 mod test {
-    use crate::maze_placeable::obstacle_type;
     use super::*;
+    use crate::maze_placeable::obstacle_type;
 
     #[test]
     fn test_new_normal_bomb() {

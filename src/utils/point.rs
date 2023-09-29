@@ -1,6 +1,6 @@
+use crate::utils::direction::Direction;
 use std::fmt;
 use std::fmt::Display;
-use crate::utils::direction::Direction;
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, PartialOrd, Ord)]
 pub struct Point {

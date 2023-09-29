@@ -1,14 +1,13 @@
-use std::fmt::Display;
 use crate::bomberman_errors::BombermanError;
 use crate::maze_placeable::bomb::Bomb;
-use crate::maze_placeable::{bomb_type, enemy};
 use crate::maze_placeable::enemy::Enemy;
 use crate::maze_placeable::obstacle::Obstacle;
 use crate::maze_placeable::obstacle_type::ObstacleType;
+use crate::maze_placeable::{bomb_type, enemy};
 use crate::utils::can_be_hit::CanBeHit;
 use crate::utils::maze_display::MazeDisplay;
 use crate::utils::point::Point;
-
+use std::fmt::Display;
 
 #[derive(Debug)]
 pub struct Bomberman {
@@ -48,7 +47,7 @@ impl Bomberman {
     }
 
     // Add a square to the game
-    fn add_square(&mut self, square: String, point: Point) -> Result<(),BombermanError> {
+    fn add_square(&mut self, square: String, point: Point) -> Result<(), BombermanError> {
         match square.get(..1) {
             Some(enemy::ENEMY) => {
                 let enemy = match Enemy::new(square, point) {
