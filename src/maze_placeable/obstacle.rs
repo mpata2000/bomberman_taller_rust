@@ -21,8 +21,8 @@ impl Obstacle {
     // DL: redirection left
     // DR: redirection right
     // Return an error if the square is invalid
-    pub fn new(square: String, position: Point) -> Result<Obstacle, BombermanError> {
-        match ObstacleType::new(&square) {
+    pub fn new(square: &str, position: Point) -> Result<Obstacle, BombermanError> {
+        match ObstacleType::new(square) {
             Ok(obstacle_type) => Ok(Obstacle {
                 obstacle_type,
                 position,
@@ -78,7 +78,7 @@ mod test {
 
     #[test]
     fn test_new_wall() {
-        let square = "W".to_string();
+        let square = "W";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(
@@ -92,7 +92,7 @@ mod test {
 
     #[test]
     fn test_new_rock() {
-        let square = "R".to_string();
+        let square = "R";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(
@@ -106,7 +106,7 @@ mod test {
 
     #[test]
     fn test_new_redirection_up() {
-        let square = "DU".to_string();
+        let square = "DU";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(
@@ -120,7 +120,7 @@ mod test {
 
     #[test]
     fn test_new_redirection_down() {
-        let square = "DD".to_string();
+        let square = "DD";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(
@@ -134,7 +134,7 @@ mod test {
 
     #[test]
     fn test_new_redirection_left() {
-        let square = "DL".to_string();
+        let square = "DL";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(
@@ -148,7 +148,7 @@ mod test {
 
     #[test]
     fn test_new_redirection_right() {
-        let square = "DR".to_string();
+        let square = "DR";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(
@@ -162,7 +162,7 @@ mod test {
 
     #[test]
     fn test_new_invalid_obstacle() {
-        let square = "A".to_string();
+        let square = "A";
         let position = Point::new(0, 0);
         let result = Obstacle::new(square, position);
         assert_eq!(

@@ -19,7 +19,7 @@ pub struct Bomberman {
 impl Bomberman {
     // Create a new game from a string
     // The string should be a square matrix of squares separated by spaces
-    pub fn new(file_string: String) -> Result<Bomberman, BombermanError> {
+    pub fn new(file_string: &str) -> Result<Bomberman, BombermanError> {
         let lines: Vec<&str> = file_string.trim().split('\n').collect();
 
         let mut game = Bomberman {
@@ -40,14 +40,14 @@ impl Bomberman {
             }
             for (x, square) in squares.iter().enumerate() {
                 let point = Point::new(x as u32, y as u32);
-                game.add_square(square.to_string(), point)?;
+                game.add_square(square, point)?;
             }
         }
         Ok(game)
     }
 
     // Add a square to the game
-    fn add_square(&mut self, square: String, point: Point) -> Result<(), BombermanError> {
+    fn add_square(&mut self, square: &str, point: Point) -> Result<(), BombermanError> {
         match square.get(..1) {
             Some(enemy::ENEMY) => {
                 let enemy = match Enemy::new(square, point) {
@@ -85,7 +85,7 @@ impl Bomberman {
     fn next_turn(&mut self) {
         self.enemies
             .iter_mut()
-            .for_each(|enemy| enemy.reset_state());
+            .for_each(Enemy::reset_state);
     }
 
     fn get_hittable_in_position(&mut self, position: Point) -> Option<&mut dyn CanBeHit> {
@@ -118,8 +118,7 @@ impl Bomberman {
             Some(bomb) => bomb.hit(),
             None => {
                 return Err(BombermanError::NoBombInStartingPosition(format!(
-                    "No bomb in starting position: {:?}",
-                    start_bomb
+                    "No bomb in starting position: {start_bomb}",
                 )))
             }
         }
@@ -128,10 +127,10 @@ impl Bomberman {
             let afected_positions = bomb.explode(self.size, &self.obstacles);
             for position in afected_positions {
                 if let Some(hittable) = self.get_hittable_in_position(position) {
-                    hittable.hit()
+                    hittable.hit();
                 }
             }
-            self.next_turn()
+            self.next_turn();
         }
 
         Ok(self.to_string())
@@ -154,10 +153,10 @@ impl Bomberman {
     fn to_matrix(&self) -> Vec<Vec<String>> {
         let mut matrix = vec![vec!["_".to_string(); self.size as usize]; self.size as usize];
         let displayable = self.get_all_displayable();
-        displayable.iter().for_each(|displayable| {
+        for displayable in displayable {
             let position = displayable.get_position();
             matrix[position.y as usize][position.x as usize] = displayable.display();
-        });
+        }
         matrix
     }
 }
@@ -170,7 +169,7 @@ impl Display for Bomberman {
             display.push_str(&line.join(" "));
             display.push('\n');
         }
-        write!(f, "{}", display)
+        write!(f, "{display}")
     }
 }
 
@@ -180,8 +179,8 @@ mod test {
 
     #[test]
     fn test_enemy_is_hit_with_redirection() {
-        let input = "_ F2 DL\n_ _ _\n_ _ B8\n".to_string();
-        let result = "_ F1 DL\n_ _ _\n_ _ _\n".to_string();
+        let input = "_ F2 DL\n_ _ _\n_ _ B8\n";
+        let result = "_ F1 DL\n_ _ _\n_ _ _\n";
         let mut game = Bomberman::new(input).unwrap();
         let board = game.play(Point::new(2, 2)).unwrap();
         assert_eq!(result, board);
@@ -189,8 +188,8 @@ mod test {
 
     #[test]
     fn test_enemy_is_not_hit_twice_by_same_bomb() {
-        let input = "B5 F2 DL\n _ _ _\n_ _ _\n".to_string();
-        let result = "_ F1 DL\n_ _ _\n_ _ _\n".to_string();
+        let input = "B5 F2 DL\n _ _ _\n_ _ _\n";
+        let result = "_ F1 DL\n_ _ _\n_ _ _\n";
         let mut game = Bomberman::new(input).unwrap();
         let board = game.play(Point::new(0, 0)).unwrap();
         assert_eq!(result, board);
@@ -198,8 +197,8 @@ mod test {
 
     #[test]
     fn test_bomb_explodes_other_bomb() {
-        let input = "B5 B2\n_ _\n".to_string();
-        let result = "_ _\n_ _\n".to_string();
+        let input = "B5 B2\n_ _\n";
+        let result = "_ _\n_ _\n";
         let mut game = Bomberman::new(input).unwrap();
         let board = game.play(Point::new(0, 0)).unwrap();
         assert_eq!(result, board);
@@ -207,7 +206,7 @@ mod test {
 
     #[test]
     fn board_not_square_returns_error() {
-        let input = "B5 B2\n_ _ _\n".to_string();
+        let input = "B5 B2\n_ _ _\n";
         let result = BombermanError::MazeNotSquare(
             "Maze has 2 lines and 3 columns, it should be equal".to_string(),
         );
@@ -217,7 +216,7 @@ mod test {
 
     #[test]
     fn invalid_square_returns_error() {
-        let input = "X B2\n_ _ \n".to_string();
+        let input = "X B2\n_ _ \n";
         let result =
             BombermanError::InvalidSquare("The square X at position (0, 0) is invalid".to_string());
         let game = Bomberman::new(input);

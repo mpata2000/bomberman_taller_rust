@@ -17,7 +17,7 @@ impl Enemy {
     // Create a new enemy from a square and a position
     // The square should start with F and be followed by a number between 1 and 3 included
     // Return an error if the square is invalid
-    pub fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
+    pub fn new(square: &str, position: Point) -> Result<Enemy, BombermanError> {
         if !square.starts_with(ENEMY) {
             return Err(BombermanError::InvalidSquare(format!(
                 "invalid enemy {square} at {position}"
@@ -93,7 +93,7 @@ mod test {
 
     #[test]
     fn test_new_enemy() {
-        let enemy = Enemy::new("F3".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F3", Point::new(0, 0));
         assert_eq!(
             enemy,
             Ok(Enemy {
@@ -106,7 +106,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_type() {
-        let enemy = Enemy::new("A3".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("A3", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(
@@ -117,7 +117,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_square() {
-        let enemy = Enemy::new("F".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(
@@ -128,7 +128,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_health() {
-        let enemy = Enemy::new("F3A".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F3A", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(
@@ -139,7 +139,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_health_float() {
-        let enemy = Enemy::new("F3.5".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F3.5", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(
@@ -150,7 +150,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_health_negative() {
-        let enemy = Enemy::new("F-3".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F-3", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(
@@ -161,7 +161,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_health_zero() {
-        let enemy = Enemy::new("F0".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F0", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(
@@ -172,7 +172,7 @@ mod test {
 
     #[test]
     fn test_new_enemy_invalid_health_too_high() {
-        let enemy = Enemy::new("F4".to_string(), Point::new(0, 0));
+        let enemy = Enemy::new("F4", Point::new(0, 0));
         assert_eq!(
             enemy,
             Err(BombermanError::InvalidSquare(

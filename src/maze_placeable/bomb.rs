@@ -20,14 +20,11 @@ impl Bomb {
     // Create a new bomb from a square and a position
     // The square should start with B or S and be followed by a number greater than 0
     // Return an error if the square is invalid
-    pub fn new(square: String, position: Point) -> Result<Bomb, BombermanError> {
-        let bomb_type = match BombType::new(&square) {
-            Ok(bomb_type) => bomb_type,
-            Err(_) => {
-                return Err(BombermanError::InvalidSquare(format!(
-                    "invalid bomb {square} at {position}. It should start with B or S"
-                )))
-            }
+    pub fn new(square: &str, position: Point) -> Result<Bomb, BombermanError> {
+        let Ok(bomb_type) = BombType::new(square) else {
+            return Err(BombermanError::InvalidSquare(format!(
+                "invalid bomb {square} at {position}. It should start with B or S"
+            )))
         };
 
         let explosion_distance = match square[1..].parse::<u32>() {
@@ -123,7 +120,7 @@ mod test {
 
     #[test]
     fn test_new_normal_bomb() {
-        let bomb = Bomb::new("B3".to_string(), Point::new(0, 0));
+        let bomb = Bomb::new("B3", Point::new(0, 0));
         assert_eq!(
             bomb,
             Ok(Bomb {
@@ -137,7 +134,7 @@ mod test {
 
     #[test]
     fn test_new_penetrating_bomb() {
-        let bomb = Bomb::new("S3".to_string(), Point::new(0, 0));
+        let bomb = Bomb::new("S3", Point::new(0, 0));
         assert_eq!(
             bomb,
             Ok(Bomb {
@@ -151,7 +148,7 @@ mod test {
 
     #[test]
     fn test_new_bomb_with_invalid_bomb_type() {
-        let bomb = Bomb::new("A3".to_string(), Point::new(0, 0));
+        let bomb = Bomb::new("A3", Point::new(0, 0));
         assert_eq!(
             bomb,
             Err(BombermanError::InvalidSquare(
@@ -162,7 +159,7 @@ mod test {
 
     #[test]
     fn test_new_bomb_with_distance_equal_to_zero_error() {
-        let bomb = Bomb::new("B0".to_string(), Point::new(0, 0));
+        let bomb = Bomb::new("B0", Point::new(0, 0));
         assert_eq!(
             bomb,
             Err(BombermanError::InvalidSquare(
@@ -174,7 +171,7 @@ mod test {
 
     #[test]
     fn test_new_bomb_with_invalid_bomb_distance() {
-        let bomb = Bomb::new("Bx".to_string(), Point::new(0, 0));
+        let bomb = Bomb::new("Bx", Point::new(0, 0));
         assert_eq!(
             bomb,
             Err(BombermanError::InvalidSquare(
@@ -264,7 +261,7 @@ mod test {
             position: Point::new(1, 1),
             explosion_distance: 3,
         };
-        let obstacles = vec![Obstacle::new("R".to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles = vec![Obstacle::new("R", Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
         let mut result = vec![
             Point::new(1, 1),
@@ -309,7 +306,7 @@ mod test {
             position: Point::new(1, 1),
             explosion_distance: 3,
         };
-        let obstacles = vec![Obstacle::new("W".to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles = vec![Obstacle::new("W", Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
         let mut result = vec![
             Point::new(1, 1),
@@ -331,7 +328,7 @@ mod test {
             position: Point::new(1, 1),
             explosion_distance: 3,
         };
-        let obstacles = vec![Obstacle::new("W".to_string(), Point::new(1, 0)).unwrap()];
+        let obstacles = vec![Obstacle::new("W", Point::new(1, 0)).unwrap()];
         let mut explosion_points = bomb.explode(3, &obstacles);
         let mut result = vec![
             Point::new(1, 1),
@@ -354,7 +351,7 @@ mod test {
             explosion_distance: 4,
         };
         let obstacles = vec![Obstacle::new(
-            obstacle_type::REDIRECTION_LEFT.to_string(),
+            obstacle_type::REDIRECTION_LEFT,
             Point::new(1, 0),
         )
         .unwrap()];
@@ -382,7 +379,7 @@ mod test {
             explosion_distance: 5,
         };
         let obstacles = vec![Obstacle::new(
-            obstacle_type::REDIRECTION_DOWN.to_string(),
+            obstacle_type::REDIRECTION_DOWN,
             Point::new(1, 0),
         )
         .unwrap()];

@@ -91,7 +91,7 @@ fn main() {
             return;
         }
     };
-    let mut game = match Bomberman::new(contents) {
+    let mut game = match Bomberman::new(&contents) {
         Ok(game) => game,
         Err(e) => {
             write_out_file(&output_path, e.to_string());
