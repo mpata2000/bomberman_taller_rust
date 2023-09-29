@@ -1,4 +1,5 @@
 use ej_individual::bomberman::Bomberman;
+use ej_individual::utils::point::Point;
 
 // Next 3 integration test come from https://taller-1-fiuba-rust.github.io/proyecto/23C2/ejercicio_individual.html
 #[test]
