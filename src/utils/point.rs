@@ -21,7 +21,7 @@ impl Point {
             Direction::Right if self.x < limit - 1 => Point::new(self.x + 1, self.y),
             _ => {
                 return Err(format!(
-                    "Cannot move {:?} from the {:?} of the board, it goes out of bounds",
+                    "Cannot move {:?} from the {} of the board, it goes out of bounds",
                     direction, self
                 ))
             }
