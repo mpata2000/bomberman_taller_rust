@@ -1,9 +1,9 @@
-use crate::bomberman::bomberman_errors::BombermanError;
-use crate::bomberman::maze_placeable::bomb_type::BombType;
-use crate::bomberman::maze_placeable::obstacle_type::ObstacleType;
-use crate::bomberman::utils::direction::Direction;
-use crate::bomberman::utils::maze_display::MazeDisplay;
-use crate::bomberman::utils::point::Point;
+use crate::bomberman_errors::BombermanError;
+use crate::maze_placeable::bomb_type::BombType;
+use crate::maze_placeable::obstacle_type::ObstacleType;
+use crate::utils::direction::Direction;
+use crate::utils::maze_display::MazeDisplay;
+use crate::utils::point::Point;
 
 #[derive(Debug, PartialEq)]
 pub(crate) struct Obstacle {
@@ -74,8 +74,8 @@ impl MazeDisplay for Obstacle {
 
 #[cfg(test)]
 mod test {
+    use crate::bomberman_errors::BombermanError::InvalidSquare;
     use super::*;
-    use crate::bomberman::bomberman_errors::BombermanError::InvalidSquare;
 
     #[test]
     fn test_new_wall() {

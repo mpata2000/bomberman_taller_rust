@@ -1,4 +1,4 @@
-use crate::bomberman::utils::point::Point;
+use crate::utils::point::Point;
 
 pub(crate) trait CanBeHit {
     // Hit the object so it changes its state if needed

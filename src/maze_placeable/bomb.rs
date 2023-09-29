@@ -1,11 +1,11 @@
-use crate::bomberman::bomberman_errors::BombermanError;
-use crate::bomberman::maze_placeable::bomb_state::BombState;
-use crate::bomberman::maze_placeable::bomb_type::BombType;
-use crate::bomberman::maze_placeable::obstacle::Obstacle;
-use crate::bomberman::utils::can_be_hit::CanBeHit;
-use crate::bomberman::utils::direction::Direction;
-use crate::bomberman::utils::maze_display::MazeDisplay;
-use crate::bomberman::utils::point::Point;
+use crate::bomberman_errors::BombermanError;
+use crate::maze_placeable::bomb_state::BombState;
+use crate::maze_placeable::bomb_type::BombType;
+use crate::maze_placeable::obstacle::Obstacle;
+use crate::utils::can_be_hit::CanBeHit;
+use crate::utils::direction::Direction;
+use crate::utils::maze_display::MazeDisplay;
+use crate::utils::point::Point;
 use std::collections::HashSet;
 
 #[derive(Debug, PartialEq)]
@@ -120,8 +120,8 @@ impl MazeDisplay for Bomb {
 
 #[cfg(test)]
 mod test {
+    use crate::maze_placeable::obstacle_type;
     use super::*;
-    use crate::bomberman::maze_placeable::obstacle_type;
 
     #[test]
     fn test_new_normal_bomb() {

@@ -1,16 +1,17 @@
-use crate::bomberman::bomberman_errors::BombermanError;
-use crate::bomberman::maze_placeable::bomb::Bomb;
-use crate::bomberman::maze_placeable::enemy::Enemy;
-use crate::bomberman::maze_placeable::obstacle::Obstacle;
-use crate::bomberman::maze_placeable::obstacle_type::ObstacleType;
-use crate::bomberman::maze_placeable::{bomb_type, enemy};
-use crate::bomberman::utils::can_be_hit::CanBeHit;
-use crate::bomberman::utils::maze_display::MazeDisplay;
-use crate::bomberman::utils::point::Point;
 use std::fmt::Display;
+use crate::bomberman_errors::BombermanError;
+use crate::maze_placeable::bomb::Bomb;
+use crate::maze_placeable::{bomb_type, enemy};
+use crate::maze_placeable::enemy::Enemy;
+use crate::maze_placeable::obstacle::Obstacle;
+use crate::maze_placeable::obstacle_type::ObstacleType;
+use crate::utils::can_be_hit::CanBeHit;
+use crate::utils::maze_display::MazeDisplay;
+use crate::utils::point::Point;
+
 
 #[derive(Debug)]
-pub(crate) struct Bomberman {
+pub struct Bomberman {
     enemies: Vec<Enemy>,
     bombs: Vec<Bomb>,
     obstacles: Vec<Obstacle>,

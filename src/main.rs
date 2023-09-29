@@ -1,9 +1,6 @@
-mod bomberman;
-mod input_errors;
-
-use crate::bomberman::game::Bomberman;
-use crate::bomberman::utils::point::Point;
-use crate::input_errors::InputError;
+use ej_individual::bomberman::Bomberman;
+use ej_individual::input_errors::InputError;
+use ej_individual::utils::point::Point;
 
 // Format the output path to remove leading and trailing slashes if they exist
 // Return the formatted path like ./{path}/

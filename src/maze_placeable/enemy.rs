@@ -1,8 +1,8 @@
-use crate::bomberman::bomberman_errors::BombermanError;
-use crate::bomberman::maze_placeable::enemy_state::EnemyState;
-use crate::bomberman::utils::can_be_hit::CanBeHit;
-use crate::bomberman::utils::maze_display::MazeDisplay;
-use crate::bomberman::utils::point::Point;
+use crate::bomberman_errors::BombermanError;
+use crate::maze_placeable::enemy_state::EnemyState;
+use crate::utils::can_be_hit::CanBeHit;
+use crate::utils::maze_display::MazeDisplay;
+use crate::utils::point::Point;
 
 pub const ENEMY: &str = "F";
 

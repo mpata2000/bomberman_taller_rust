@@ -1,6 +1,6 @@
-use crate::bomberman::utils::direction::Direction;
 use std::fmt;
 use std::fmt::Display;
+use crate::utils::direction::Direction;
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, PartialOrd, Ord)]
 pub struct Point {
@@ -9,7 +9,7 @@ pub struct Point {
 }
 
 impl Point {
-    pub(crate) fn new(x: u32, y: u32) -> Point {
+    pub fn new(x: u32, y: u32) -> Point {
         Point { x, y }
     }
 
