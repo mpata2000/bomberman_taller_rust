@@ -17,7 +17,7 @@ impl Enemy {
     // Create a new enemy from a square and a position
     // The square should start with F and be followed by a number between 1 and 3 included
     // Return an error if the square is invalid
-    pub(crate) fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
+    pub fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
         if !square.starts_with(ENEMY) {
             return Err(BombermanError::InvalidSquare(format!(
                 "invalid enemy {} at {}",

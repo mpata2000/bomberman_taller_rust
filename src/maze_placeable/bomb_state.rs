@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq)]
-pub(super) enum BombState {
+pub enum BombState {
     Idle,
     Exploded,
     Activated,

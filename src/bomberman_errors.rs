@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 #[derive(Debug, PartialEq)]
-pub(crate) enum BombermanError {
+pub enum BombermanError {
     MazeNotSquare(String),
     InvalidSquare(String),
     NoBombInStartingPosition(String),

@@ -1,5 +1,5 @@
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub(crate) enum Direction {
+pub enum Direction {
     Up,
     Down,
     Left,
@@ -8,7 +8,7 @@ pub(crate) enum Direction {
 
 impl Direction {
     // Source: https://stackoverflow.com/questions/21371534/in-rust-is-there-a-way-to-iterate-through-the-values-of-an-enum
-    pub(crate) fn iter() -> impl Iterator<Item = Direction> {
+    pub fn iter() -> impl Iterator<Item = Direction> {
         [
             Direction::Up,
             Direction::Down,

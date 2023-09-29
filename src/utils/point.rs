@@ -4,8 +4,8 @@ use crate::utils::direction::Direction;
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, PartialOrd, Ord)]
 pub struct Point {
-    pub(crate) x: u32,
-    pub(crate) y: u32,
+    pub x: u32,
+    pub y: u32,
 }
 
 impl Point {
@@ -13,7 +13,7 @@ impl Point {
         Point { x, y }
     }
 
-    pub(crate) fn next_point(self, direction: Direction, limit: u32) -> Result<Point, String> {
+    pub fn next_point(self, direction: Direction, limit: u32) -> Result<Point, String> {
         let point = match direction {
             Direction::Down if self.y < limit - 1 => Point::new(self.x, self.y + 1),
             Direction::Up if self.y > 0 => Point::new(self.x, self.y - 1),
@@ -21,7 +21,7 @@ impl Point {
             Direction::Right if self.x < limit - 1 => Point::new(self.x + 1, self.y),
             _ => {
                 return Err(format!(
-                    "Cannot move {:?} from the {} of the board, it goes out of bounds",
+                    "Cannot move {:?} from the {:?} of the board, it goes out of bounds",
                     direction, self
                 ))
             }

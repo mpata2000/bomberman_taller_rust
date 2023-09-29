@@ -9,7 +9,7 @@ use crate::utils::point::Point;
 use std::collections::HashSet;
 
 #[derive(Debug, PartialEq)]
-pub(crate) struct Bomb {
+pub struct Bomb {
     bomb_type: BombType,
     bomb_state: BombState,
     position: Point,
@@ -20,7 +20,7 @@ impl Bomb {
     // Create a new bomb from a square and a position
     // The square should start with B or S and be followed by a number greater than 0
     // Return an error if the square is invalid
-    pub(crate) fn new(square: String, position: Point) -> Result<Bomb, BombermanError> {
+    pub fn new(square: String, position: Point) -> Result<Bomb, BombermanError> {
         let bomb_type = match BombType::new(&square) {
             Ok(bomb_type) => bomb_type,
             Err(_) => {
@@ -49,12 +49,12 @@ impl Bomb {
     }
 
     // Return true if the bomb is active
-    pub(crate) fn is_active(&self) -> bool {
+    pub fn is_active(&self) -> bool {
         self.bomb_state == BombState::Activated
     }
 
     // Explode the bomb and return the list of points affected by the explosion
-    pub(crate) fn explode(&mut self, maze_size: u32, obstacles: &[Obstacle]) -> Vec<Point> {
+    pub fn explode(&mut self, maze_size: u32, obstacles: &[Obstacle]) -> Vec<Point> {
         self.bomb_state = BombState::Exploded;
         let mut explosion_points = HashSet::from([self.position]);
 

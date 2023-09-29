@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq)]
-pub(super) enum EnemyState {
+pub enum EnemyState {
     Hit,
     Dead,
     Idle,

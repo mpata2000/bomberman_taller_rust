@@ -1,6 +1,6 @@
 use crate::utils::point::Point;
 
-pub(crate) trait CanBeHit {
+pub trait CanBeHit {
     // Hit the object so it changes its state if needed
     fn hit(&mut self);
     // Return the position of the object

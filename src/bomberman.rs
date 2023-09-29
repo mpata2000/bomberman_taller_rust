@@ -20,7 +20,7 @@ pub struct Bomberman {
 impl Bomberman {
     // Create a new game from a string
     // The string should be a square matrix of squares separated by spaces
-    pub(crate) fn new(file_string: String) -> Result<Bomberman, BombermanError> {
+    pub fn new(file_string: String) -> Result<Bomberman, BombermanError> {
         let lines: Vec<&str> = file_string.trim().split('\n').collect();
 
         let mut game = Bomberman {
@@ -41,47 +41,45 @@ impl Bomberman {
             }
             for (x, square) in squares.iter().enumerate() {
                 let point = Point::new(x as u32, y as u32);
-                if let Some(e) = game.add_square(square.to_string(), point) {
-                    return Err(e);
-                }
+                game.add_square(square.to_string(), point)?;
             }
         }
         Ok(game)
     }
 
     // Add a square to the game
-    fn add_square(&mut self, square: String, point: Point) -> Option<BombermanError> {
+    fn add_square(&mut self, square: String, point: Point) -> Result<(),BombermanError> {
         match square.get(..1) {
             Some(enemy::ENEMY) => {
                 let enemy = match Enemy::new(square, point) {
                     Ok(enemy) => enemy,
-                    Err(e) => return Some(e),
+                    Err(e) => return Err(e),
                 };
                 self.enemies.push(enemy);
             }
             Some(bomb_type::NORMAL_BOMB) | Some(bomb_type::PENETRATING_BOMB) => {
                 let bomb = match Bomb::new(square, point) {
                     Ok(bomb) => bomb,
-                    Err(e) => return Some(e),
+                    Err(e) => return Err(e),
                 };
                 self.bombs.push(bomb);
             }
             Some(x) if ObstacleType::is_obstacle(x) => {
                 let obstacle = match Obstacle::new(square, point) {
                     Ok(obstacle) => obstacle,
-                    Err(e) => return Some(e),
+                    Err(e) => return Err(e),
                 };
                 self.obstacles.push(obstacle);
             }
             Some("_") => (),
             _ => {
-                return Some(BombermanError::InvalidSquare(format!(
+                return Err(BombermanError::InvalidSquare(format!(
                     "The square {} at position ({}, {}) is invalid",
                     square, point.x, point.y
                 )))
             }
         }
-        None
+        Ok(())
     }
 
     // Set game for next turn
@@ -113,7 +111,7 @@ impl Bomberman {
 
     // Plays the game with the given starting bomb
     // Returns the string of the maze after the game or an error
-    pub(crate) fn play(&mut self, start_bomb: Point) -> Result<String, BombermanError> {
+    pub fn play(&mut self, start_bomb: Point) -> Result<String, BombermanError> {
         match self
             .bombs
             .iter_mut()
@@ -122,7 +120,7 @@ impl Bomberman {
             Some(bomb) => bomb.hit(),
             None => {
                 return Err(BombermanError::NoBombInStartingPosition(format!(
-                    "No bomb in starting position: {}",
+                    "No bomb in starting position: {:?}",
                     start_bomb
                 )))
             }

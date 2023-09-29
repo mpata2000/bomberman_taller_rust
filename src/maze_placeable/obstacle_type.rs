@@ -9,7 +9,7 @@ pub const REDIRECTION_LEFT: &str = "DL";
 pub const REDIRECTION_RIGHT: &str = "DR";
 
 #[derive(Debug, PartialEq)]
-pub(crate) enum ObstacleType {
+pub enum ObstacleType {
     Wall,
     Rock,
     RedirectionUp,
@@ -19,7 +19,7 @@ pub(crate) enum ObstacleType {
 }
 
 impl ObstacleType {
-    pub(crate) fn new(square: &str) -> Result<ObstacleType, String> {
+    pub fn new(square: &str) -> Result<ObstacleType, String> {
         match square {
             WALL => Ok(ObstacleType::Wall),
             ROCK => Ok(ObstacleType::Rock),
@@ -32,7 +32,7 @@ impl ObstacleType {
     }
 
     // Return true if the square is an obstacle
-    pub(crate) fn is_obstacle(square: &str) -> bool {
+    pub fn is_obstacle(square: &str) -> bool {
         square == WALL || square == ROCK || square.starts_with(REDIRECTION)
     }
 }
