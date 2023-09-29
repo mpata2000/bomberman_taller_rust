@@ -56,7 +56,7 @@ impl Bomberman {
                 };
                 self.enemies.push(enemy);
             }
-            Some(bomb_type::NORMAL_BOMB) | Some(bomb_type::PENETRATING_BOMB) => {
+            Some(bomb_type::NORMAL_BOMB | bomb_type::PENETRATING_BOMB) => {
                 let bomb = match Bomb::new(square, point) {
                     Ok(bomb) => bomb,
                     Err(e) => return Err(e),
@@ -73,8 +73,7 @@ impl Bomberman {
             Some("_") => (),
             _ => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "The square {} at position ({}, {}) is invalid",
-                    square, point.x, point.y
+                    "The square {square} at position {point} is invalid"
                 )))
             }
         }

@@ -20,8 +20,7 @@ impl Enemy {
     pub fn new(square: String, position: Point) -> Result<Enemy, BombermanError> {
         if !square.starts_with(ENEMY) {
             return Err(BombermanError::InvalidSquare(format!(
-                "invalid enemy {} at {}",
-                square, position
+                "invalid enemy {square} at {position}"
             )));
         }
 
@@ -29,8 +28,7 @@ impl Enemy {
             Ok(health) if health > 0 && health < 4 => health,
             _ => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "invalid enemy health {} at {}. It should be a positive number between 1 and 3 included",
-                    square, position
+                    "invalid enemy health {square} at {position}. It should be a positive number between 1 and 3 included"
                 )))
             }
         };
@@ -45,7 +43,7 @@ impl Enemy {
     // If the enemy is hit, reset the state to NotHit for the next turn
     pub(crate) fn reset_state(&mut self) {
         if self.state == EnemyState::Hit {
-            self.state = EnemyState::Idle
+            self.state = EnemyState::Idle;
         }
     }
 }

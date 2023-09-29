@@ -40,12 +40,12 @@ impl ObstacleType {
 impl Display for ObstacleType {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            ObstacleType::Wall => write!(f, "{}", WALL),
-            ObstacleType::Rock => write!(f, "{}", ROCK),
-            ObstacleType::RedirectionUp => write!(f, "{}", REDIRECTION_UP),
-            ObstacleType::RedirectionDown => write!(f, "{}", REDIRECTION_DOWN),
-            ObstacleType::RedirectionLeft => write!(f, "{}", REDIRECTION_LEFT),
-            ObstacleType::RedirectionRight => write!(f, "{}", REDIRECTION_RIGHT),
+            ObstacleType::Wall => write!(f, "{WALL}"),
+            ObstacleType::Rock => write!(f, "{ROCK}"),
+            ObstacleType::RedirectionUp => write!(f, "{REDIRECTION_UP}"),
+            ObstacleType::RedirectionDown => write!(f, "{REDIRECTION_DOWN}"),
+            ObstacleType::RedirectionLeft => write!(f, "{REDIRECTION_LEFT}"),
+            ObstacleType::RedirectionRight => write!(f, "{REDIRECTION_RIGHT}"),
         }
     }
 }

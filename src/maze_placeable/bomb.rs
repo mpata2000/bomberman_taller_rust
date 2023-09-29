@@ -25,8 +25,7 @@ impl Bomb {
             Ok(bomb_type) => bomb_type,
             Err(_) => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "invalid bomb {} at {}. It should start with B or S",
-                    square, position
+                    "invalid bomb {square} at {position}. It should start with B or S"
                 )))
             }
         };
@@ -35,8 +34,7 @@ impl Bomb {
             Ok(bomb_distance) if bomb_distance > 0 => bomb_distance,
             _ => {
                 return Err(BombermanError::InvalidSquare(format!(
-                    "invalid bomb distance {} at {} it should be positive number greater than 0",
-                    square, position
+                    "invalid bomb distance {square} at {position} it should be positive number greater than 0"
                 )))
             }
         };

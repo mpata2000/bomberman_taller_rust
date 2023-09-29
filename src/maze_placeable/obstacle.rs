@@ -28,8 +28,7 @@ impl Obstacle {
                 position,
             }),
             Err(_) => Err(BombermanError::InvalidSquare(format!(
-                "invalid obstacle {} at {}",
-                square, position
+                "invalid obstacle {square} at {position}"
             ))),
         }
     }
